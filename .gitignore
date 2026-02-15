@@ -11,6 +11,8 @@ node_modules
 dist
 dist-ssr
 *.local
+.env
+push-to-github.ps1
 
 # Editor directories and files
 .vscode/*
