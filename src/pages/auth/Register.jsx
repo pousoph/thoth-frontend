@@ -5,14 +5,13 @@ import { Stepper } from "../../components/ui/Stepper.jsx";
 import { StepAccount } from "./steps/StepAccount.jsx";
 import StepPersonal from "./steps/StepPersonal.jsx";
 import { registerContestant } from "../../services/authService";
+import { PENDING_VERIFY_STORAGE_KEY } from "../../constants/auth";
 import "../../styles/pages/register.css";
-
-const PENDING_VERIFY_KEY = "pendingVerifyUserId";
 
 function navigateAfterRegister(data, navigate) {
     const userId = data?.id ?? data?.userId ?? data?.user?.id;
     if (userId != null) {
-        sessionStorage.setItem(PENDING_VERIFY_KEY, String(userId));
+        sessionStorage.setItem(PENDING_VERIFY_STORAGE_KEY, String(userId));
         navigate("/verify-account", { state: { userId } });
     } else {
         navigate("/verify-account");

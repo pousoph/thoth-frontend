@@ -5,9 +5,8 @@ import { AuthLayout } from "../../components/layout/AuthLayout";
 import { Input } from "../../components/ui/Input";
 import { Button } from "../../components/ui/Button";
 import { verifyAccount } from "../../services/authService";
+import { PENDING_VERIFY_STORAGE_KEY } from "../../constants/auth";
 import "../../styles/pages/verifyAccount.css";
-
-const PENDING_VERIFY_KEY = "pendingVerifyUserId";
 
 const VerifyAccount = () => {
     const navigate = useNavigate();
@@ -16,7 +15,7 @@ const VerifyAccount = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
 
-    const userId = location.state?.userId ?? sessionStorage.getItem(PENDING_VERIFY_KEY);
+    const userId = location.state?.userId ?? sessionStorage.getItem(PENDING_VERIFY_STORAGE_KEY);
 
     const handleCodeChange = useCallback((e) => {
         setCode(e.target.value);
@@ -38,7 +37,7 @@ const VerifyAccount = () => {
 
         try {
             await verifyAccount(code.trim(), Number(userId));
-            sessionStorage.removeItem(PENDING_VERIFY_KEY);
+            sessionStorage.removeItem(PENDING_VERIFY_STORAGE_KEY);
             navigate("/login", { state: { message: "Cuenta verificada. Ya puedes iniciar sesión." } });
         } catch (err) {
             setError(err.message || "No se pudo verificar la cuenta.");
