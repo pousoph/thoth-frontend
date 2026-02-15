@@ -20,22 +20,32 @@ export const loginUser = async (username, password) => {
     localStorage.setItem("token", data.token);
     return data;
 };
-export const registerContestant = async (formData) => {
+/** Converts YYYY-MM-DD (date input) to DD-MM-YYYY (API). */
+const toBirthDateApi = (value) => {
+    if (!value) return value;
+    const match = value.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    if (match) return `${match[3]}-${match[2]}-${match[1]}`;
+    return value;
+};
 
+export const registerContestant = async (formData) => {
     const body = {
         name: formData.name,
         "last-name": formData.lastName,
         username: formData.username,
         password: formData.password,
         email: formData.email,
-        "birth-date": formData.birthDate,
+        "birth-date": toBirthDateApi(formData.birthDate),
         size: formData.size,
         "codeforces-handle": formData.codeforcesHandle,
         gender: formData.gender
     };
 
+    const url = `${API_BASE_URL}/api/v1/auth/register/contestant`;
+
+
     const response = await fetch(
-        `${API_BASE_URL}/api/v1/auth/register/contestant`,
+        url,
         {
             method: "POST",
             headers: {
@@ -45,9 +55,50 @@ export const registerContestant = async (formData) => {
         }
     );
 
+    const data = await response.json().catch(() => ({}));
+
     if (!response.ok) {
-        throw new Error("Error al registrar usuario");
+        const message =
+            data.message || data.error || "Error al registrar usuario";
+        throw new Error(message);
     }
 
-    return response.json();
+    return data;
+};
+
+/** Build user-friendly message from API error response. */
+const getErrorMessage = (data, fallback) => {
+    if (!data || typeof data !== "object") return fallback;
+    const msg =
+        data.message ??
+        data.error ??
+        data.detail ??
+        (Array.isArray(data.errors) ? data.errors.join(", ") : data.errors);
+    return msg != null ? String(msg) : fallback;
+};
+
+export const verifyAccount = async (code, id) => {
+    const userId = id != null ? Number(id) : undefined;
+    if (userId === undefined || Number.isNaN(userId)) {
+        throw new Error("Falta el identificador de usuario. Vuelve a registrarte.");
+    }
+    const response = await fetch(`${API_BASE_URL}/api/v1/auth/activate`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ code, id: userId })
+    });
+
+    const data = await response.json().catch(() => ({}));
+
+    if (!response.ok) {
+        const message = getErrorMessage(
+            data,
+            "Código inválido o expirado."
+        );
+        throw new Error(message);
+    }
+
+    return data;
 };

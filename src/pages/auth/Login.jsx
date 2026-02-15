@@ -52,7 +52,7 @@ export const Login = () => {
                     className="auth-logo"
                 />
                 <h1>Bienvenido a Thoth</h1>
-                <p>Gestión del Grupo de Programación Competitiva</p>
+                <p>Gestión de Grupo de Programación Competitiva</p>
             </div>
 
             <form className="auth-form" onSubmit={handleSubmit}>

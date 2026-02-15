@@ -7,6 +7,8 @@ import StepPersonal from "./steps/StepPersonal.jsx";
 import { registerContestant } from "../../services/authService";
 import "../../styles/pages/register.css";
 
+const PENDING_VERIFY_KEY = "pendingVerifyUserId";
+
 export const Register = () => {
     const navigate = useNavigate();
     const [step, setStep] = useState(1);
@@ -30,10 +32,16 @@ export const Register = () => {
         setLoading(true);
 
         try {
-            await registerContestant(formData);
-            navigate("/verify-account");
+            const data = await registerContestant(formData);
+            const userId = data?.id ?? data?.userId ?? data?.user?.id;
+            if (userId != null) {
+                sessionStorage.setItem(PENDING_VERIFY_KEY, String(userId));
+                navigate("/verify-account", { state: { userId } });
+            } else {
+                navigate("/verify-account");
+            }
         } catch (err) {
-            setError("No se pudo crear la cuenta. Verifica los datos.");
+            setError(err.message || "No se pudo crear la cuenta. Verifica los datos.");
         } finally {
             setLoading(false);
         }

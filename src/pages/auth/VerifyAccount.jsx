@@ -1,21 +1,66 @@
 import { useState, useCallback } from "react";
-import emailGif from "../../assets/imgs/emailSent.gif"
+import { useNavigate, useLocation } from "react-router-dom";
+import emailGif from "../../assets/imgs/emailSent.gif";
 import { AuthLayout } from "../../components/layout/AuthLayout";
 import { Input } from "../../components/ui/Input";
 import { Button } from "../../components/ui/Button";
+import { verifyAccount } from "../../services/authService";
 import "../../styles/pages/verifyAccount.css";
 
+const PENDING_VERIFY_KEY = "pendingVerifyUserId";
 
 const VerifyAccount = () => {
+    const navigate = useNavigate();
+    const location = useLocation();
     const [code, setCode] = useState("");
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
+
+    const userId = location.state?.userId ?? sessionStorage.getItem(PENDING_VERIFY_KEY);
 
     const handleCodeChange = useCallback((e) => {
         setCode(e.target.value);
+        setError("");
     }, []);
 
-    const handleVerify = useCallback(() => {
-        // TODO: call verification API with code
-    }, [code]);
+    const handleVerify = useCallback(async () => {
+        if (!code.trim()) {
+            setError("Ingresa el código de verificación.");
+            return;
+        }
+        if (!userId) {
+            setError("Sesión inválida. Vuelve a registrarte.");
+            return;
+        }
+
+        setError("");
+        setLoading(true);
+
+        try {
+            await verifyAccount(code.trim(), Number(userId));
+            sessionStorage.removeItem(PENDING_VERIFY_KEY);
+            navigate("/login", { state: { message: "Cuenta verificada. Ya puedes iniciar sesión." } });
+        } catch (err) {
+            setError(err.message || "No se pudo verificar la cuenta.");
+        } finally {
+            setLoading(false);
+        }
+    }, [code, userId, navigate]);
+
+    if (!userId) {
+        return (
+            <AuthLayout>
+                <div className="verify-container fade-in">
+                    <p className="auth-error">
+                        No hay una cuenta pendiente de verificar. Por favor, regístrate primero.
+                    </p>
+                    <Button onClick={() => navigate("/register")}>
+                        Ir a registrarse
+                    </Button>
+                </div>
+            </AuthLayout>
+        );
+    }
 
     return (
         <AuthLayout>
@@ -41,10 +86,13 @@ const VerifyAccount = () => {
                     placeholder="Ej. 123456"
                     value={code}
                     onChange={handleCodeChange}
+                    maxLength={6}
                 />
 
-                <Button onClick={handleVerify}>
-                    Verificar cuenta
+                {error && <p className="auth-error">{error}</p>}
+
+                <Button onClick={handleVerify} disabled={loading}>
+                    {loading ? "Verificando..." : "Verificar cuenta"}
                 </Button>
 
                 <p className="verify-helper">
