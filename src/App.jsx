@@ -15,10 +15,6 @@ function App() {
         checkBackend();
     }, []);
 
-    if (backendStatus === "checking") {
-       console.log("Checking");
-    }
-
     if (backendStatus === "error") {
         return (
             <div className="system-error">
@@ -27,8 +23,6 @@ function App() {
                 <p>Intenta más tarde o contacta soporte.</p>
             </div>
         );
-    } else if (backendStatus === "ok") {
-        console.log("Servicio funcionando :)")
     }
 
     return (

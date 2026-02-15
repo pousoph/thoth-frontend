@@ -1,30 +1,29 @@
+import { useCallback, useMemo } from "react";
 import { Button } from "../../../components/ui/Button";
 
+const FIELDS = ["name", "lastName", "birthDate", "gender", "size", "codeforcesHandle"];
+
+const isStepPersonalValid = (formData) =>
+    FIELDS.every((field) => Boolean(formData[field]));
+
 const StepPersonal = ({ formData, setFormData, onBack, onFinish, loading }) => {
-
-    const handleChange = (e) => {
+    const handleChange = useCallback((e) => {
         const { name, value } = e.target;
+        setFormData((prev) => ({ ...prev, [name]: value }));
+    }, [setFormData]);
 
-        setFormData({
-            ...formData,
-            [name]: value
-        });
-    };
-
-    const isValid =
-        formData.name &&
-        formData.lastName &&
-        formData.birthDate &&
-        formData.gender &&
-        formData.size &&
-        formData.codeforcesHandle;
+    const isValid = useMemo(
+        () => isStepPersonalValid(formData),
+        [formData]
+    );
 
     return (
         <div className="step fade-in">
 
             <div className="input-group">
-                <label>Nombre</label>
+                <label htmlFor="step-personal-name">Nombre</label>
                 <input
+                    id="step-personal-name"
                     type="text"
                     name="name"
                     value={formData.name}
@@ -33,8 +32,9 @@ const StepPersonal = ({ formData, setFormData, onBack, onFinish, loading }) => {
             </div>
 
             <div className="input-group">
-                <label>Apellido</label>
+                <label htmlFor="step-personal-lastName">Apellido</label>
                 <input
+                    id="step-personal-lastName"
                     type="text"
                     name="lastName"
                     value={formData.lastName}
@@ -43,8 +43,9 @@ const StepPersonal = ({ formData, setFormData, onBack, onFinish, loading }) => {
             </div>
 
             <div className="input-group">
-                <label>Fecha de nacimiento</label>
+                <label htmlFor="step-personal-birthDate">Fecha de nacimiento</label>
                 <input
+                    id="step-personal-birthDate"
                     type="text"
                     name="birthDate"
                     placeholder="01-01-2000"
@@ -54,8 +55,9 @@ const StepPersonal = ({ formData, setFormData, onBack, onFinish, loading }) => {
             </div>
 
             <div className="input-group">
-                <label>Género</label>
+                <label htmlFor="step-personal-gender">Género</label>
                 <select
+                    id="step-personal-gender"
                     name="gender"
                     value={formData.gender}
                     onChange={handleChange}
@@ -67,8 +69,9 @@ const StepPersonal = ({ formData, setFormData, onBack, onFinish, loading }) => {
             </div>
 
             <div className="input-group">
-                <label>Talla de camiseta</label>
+                <label htmlFor="step-personal-size">Talla de camiseta</label>
                 <select
+                    id="step-personal-size"
                     name="size"
                     value={formData.size}
                     onChange={handleChange}
@@ -83,8 +86,9 @@ const StepPersonal = ({ formData, setFormData, onBack, onFinish, loading }) => {
             </div>
 
             <div className="input-group">
-                <label>Codeforces handle</label>
+                <label htmlFor="step-personal-codeforcesHandle">Codeforces handle</label>
                 <input
+                    id="step-personal-codeforcesHandle"
                     type="text"
                     name="codeforcesHandle"
                     value={formData.codeforcesHandle}

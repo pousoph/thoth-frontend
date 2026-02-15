@@ -1,31 +1,24 @@
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export const loginUser = async (username, password) => {
-    try {
-        const response = await fetch(`${API_BASE_URL}/api/v1/auth/login`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                username,
-                password
-            })
-        });
+    const response = await fetch(`${API_BASE_URL}/api/v1/auth/login`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            username,
+            password
+        })
+    });
 
-        if (!response.ok) {
-            throw new Error("Credenciales incorrectas");
-        }
-
-        const data = await response.json();
-
-        localStorage.setItem("token", data.token);
-
-        return data;
-
-    } catch (error) {
-        throw error;
+    if (!response.ok) {
+        throw new Error("Credenciales incorrectas");
     }
+
+    const data = await response.json();
+    localStorage.setItem("token", data.token);
+    return data;
 };
 export const registerContestant = async (formData) => {
 
@@ -56,5 +49,5 @@ export const registerContestant = async (formData) => {
         throw new Error("Error al registrar usuario");
     }
 
-    return await response.json();
+    return response.json();
 };

@@ -1,7 +1,19 @@
+import { useCallback } from "react";
 import { Input } from "../../../components/ui/Input.jsx";
 import { Button } from "../../../components/ui/Button.jsx";
 
 export const StepAccount = ({ formData, setFormData, onNext, onBack }) => {
+    const handleEmailChange = useCallback((e) => {
+        setFormData((prev) => ({ ...prev, email: e.target.value }));
+    }, [setFormData]);
+
+    const handleUsernameChange = useCallback((e) => {
+        setFormData((prev) => ({ ...prev, username: e.target.value }));
+    }, [setFormData]);
+
+    const handlePasswordChange = useCallback((e) => {
+        setFormData((prev) => ({ ...prev, password: e.target.value }));
+    }, [setFormData]);
 
     const isValid =
         formData.email &&
@@ -15,27 +27,21 @@ export const StepAccount = ({ formData, setFormData, onNext, onBack }) => {
                 label="Correo institucional"
                 type="email"
                 value={formData.email}
-                onChange={(e) =>
-                    setFormData({ ...formData, email: e.target.value })
-                }
+                onChange={handleEmailChange}
             />
 
             <Input
                 label="Username"
                 type="text"
                 value={formData.username}
-                onChange={(e) =>
-                    setFormData({ ...formData, username: e.target.value })
-                }
+                onChange={handleUsernameChange}
             />
 
             <Input
                 label="Contraseña"
                 type="password"
                 value={formData.password}
-                onChange={(e) =>
-                    setFormData({ ...formData, password: e.target.value })
-                }
+                onChange={handlePasswordChange}
             />
 
             <div className="step-actions">

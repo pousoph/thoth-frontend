@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthLayout } from "../../components/layout/AuthLayout";
 import { Stepper } from "../../components/ui/Stepper.jsx";
@@ -25,7 +25,7 @@ export const Register = () => {
         gender: ""
     });
 
-    const handleRegister = async () => {
+    const handleRegister = useCallback(async () => {
         setError("");
         setLoading(true);
 
@@ -37,7 +37,11 @@ export const Register = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [formData, navigate]);
+
+    const goToStep2 = useCallback(() => setStep(2), []);
+    const goToLogin = useCallback(() => navigate("/login"), [navigate]);
+    const goToStep1 = useCallback(() => setStep(1), []);
 
     return (
         <AuthLayout>
@@ -56,8 +60,8 @@ export const Register = () => {
                     <StepAccount
                         formData={formData}
                         setFormData={setFormData}
-                        onNext={() => setStep(2)}
-                        onBack={() => navigate("/login")}
+                        onNext={goToStep2}
+                        onBack={goToLogin}
                     />
                 )}
 
@@ -65,7 +69,7 @@ export const Register = () => {
                     <StepPersonal
                         formData={formData}
                         setFormData={setFormData}
-                        onBack={() => setStep(1)}
+                        onBack={goToStep1}
                         onFinish={handleRegister}
                         loading={loading}
                     />

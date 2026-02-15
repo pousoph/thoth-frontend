@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { AuthLayout } from "../../components/layout/AuthLayout.jsx";
 import { Input } from "../../components/ui/Input.jsx";
@@ -18,15 +18,14 @@ export const Login = () => {
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
 
-    const handleChange = (e) => {
-        setFormData({
-            ...formData,
+    const handleChange = useCallback((e) => {
+        setFormData((prev) => ({
+            ...prev,
             [e.target.name]: e.target.value
-        });
-    };
-    
+        }));
+    }, []);
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = useCallback(async (e) => {
         e.preventDefault();
         setError("");
         setLoading(true);
@@ -42,7 +41,7 @@ export const Login = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [formData.username, formData.password, navigate]);
 
     return (
         <AuthLayout>

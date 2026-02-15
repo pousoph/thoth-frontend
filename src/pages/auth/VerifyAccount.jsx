@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import emailGif from "../../assets/imgs/emailSent.gif"
 import { AuthLayout } from "../../components/layout/AuthLayout";
 import { Input } from "../../components/ui/Input";
@@ -8,6 +8,14 @@ import "../../styles/pages/verifyAccount.css";
 
 const VerifyAccount = () => {
     const [code, setCode] = useState("");
+
+    const handleCodeChange = useCallback((e) => {
+        setCode(e.target.value);
+    }, []);
+
+    const handleVerify = useCallback(() => {
+        // TODO: call verification API with code
+    }, [code]);
 
     return (
         <AuthLayout>
@@ -32,10 +40,10 @@ const VerifyAccount = () => {
                     label="Código de verificación"
                     placeholder="Ej. 123456"
                     value={code}
-                    onChange={(e) => setCode(e.target.value)}
+                    onChange={handleCodeChange}
                 />
 
-                <Button onClick={() => console.log("Código:", code)}>
+                <Button onClick={handleVerify}>
                     Verificar cuenta
                 </Button>
 
