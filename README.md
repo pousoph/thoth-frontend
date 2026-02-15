@@ -1,6 +1,6 @@
-# React + Vite
+# thoth-frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React + Vite frontend for the Thoth project.
 
 Currently, two official plugins are available:
 
