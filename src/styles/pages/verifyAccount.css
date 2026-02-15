@@ -1,0 +1,24 @@
+.verify-container {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.verify-icon {
+    font-size: 3rem;
+}
+
+.verify-text {
+    font-size: 0.9rem;
+    color: var(--color-text-muted);
+}
+
+.verify-helper {
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+}
+.verify-gif {
+    width: 120px;
+    max-width: 80%;
+}

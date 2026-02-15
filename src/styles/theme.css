@@ -1,0 +1,36 @@
+:root {
+
+    --color-bg: linear-gradient(
+            135deg,
+            #2c2c2c,
+            #1f1f1f
+    );
+
+
+    --color-card: #f9f9f9;
+
+
+    --color-text-main: #1e1e1e;
+    --color-text-muted: #6f6f6f;
+
+
+    --color-border: #ffffff;
+
+    --color-primary: #3a3a3a;
+    --color-primary-hover: #1f1f1f;
+
+
+    --color-error: #d64545;
+    --color-success: #3fa37c;
+
+
+    --radius-card: 22px;
+    --radius-input: 10px;
+    --transition-base: 0.25s ease;
+
+
+    --font-title: 1.6rem;
+    --font-subtitle: 1rem;
+    --font-body: 0.9rem;
+    --font-small: 0.8rem;
+}
