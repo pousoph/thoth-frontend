@@ -47,6 +47,8 @@ const VerifyAccount = () => {
         }
     }, [code, userId, navigate]);
 
+    const goToRegister = useCallback(() => navigate("/register"), [navigate]);
+
     if (!userId) {
         return (
             <AuthLayout>
@@ -54,7 +56,7 @@ const VerifyAccount = () => {
                     <p className="auth-error">
                         No hay una cuenta pendiente de verificar. Por favor, regístrate primero.
                     </p>
-                    <Button onClick={() => navigate("/register")}>
+                    <Button onClick={goToRegister}>
                         Ir a registrarse
                     </Button>
                 </div>

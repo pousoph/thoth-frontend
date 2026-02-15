@@ -66,14 +66,18 @@ export const registerContestant = async (formData) => {
     return data;
 };
 
+const getDirectMessage = (data) => data.message ?? data.error ?? data.detail;
+
+const getErrorsFieldMessage = (data) => {
+    const err = data.errors;
+    if (Array.isArray(err)) return err.join(", ");
+    return err != null ? String(err) : null;
+};
+
 /** Build user-friendly message from API error response. */
 const getErrorMessage = (data, fallback) => {
     if (!data || typeof data !== "object") return fallback;
-    const msg =
-        data.message ??
-        data.error ??
-        data.detail ??
-        (Array.isArray(data.errors) ? data.errors.join(", ") : data.errors);
+    const msg = getDirectMessage(data) ?? getErrorsFieldMessage(data);
     return msg != null ? String(msg) : fallback;
 };
 

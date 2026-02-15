@@ -9,6 +9,16 @@ import "../../styles/pages/register.css";
 
 const PENDING_VERIFY_KEY = "pendingVerifyUserId";
 
+function navigateAfterRegister(data, navigate) {
+    const userId = data?.id ?? data?.userId ?? data?.user?.id;
+    if (userId != null) {
+        sessionStorage.setItem(PENDING_VERIFY_KEY, String(userId));
+        navigate("/verify-account", { state: { userId } });
+    } else {
+        navigate("/verify-account");
+    }
+}
+
 export const Register = () => {
     const navigate = useNavigate();
     const [step, setStep] = useState(1);
@@ -30,16 +40,9 @@ export const Register = () => {
     const handleRegister = useCallback(async () => {
         setError("");
         setLoading(true);
-
         try {
             const data = await registerContestant(formData);
-            const userId = data?.id ?? data?.userId ?? data?.user?.id;
-            if (userId != null) {
-                sessionStorage.setItem(PENDING_VERIFY_KEY, String(userId));
-                navigate("/verify-account", { state: { userId } });
-            } else {
-                navigate("/verify-account");
-            }
+            navigateAfterRegister(data, navigate);
         } catch (err) {
             setError(err.message || "No se pudo crear la cuenta. Verifica los datos.");
         } finally {
