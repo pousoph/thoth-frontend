@@ -66,11 +66,11 @@ const registerWithEndpoint = async (endpoint, formData) => {
     return data;
 };
 
-export const registerContestant = async (formData) => {
+export const registerContestant = (formData) => {
     return registerWithEndpoint("/api/v1/auth/register/contestant", formData);
 };
 
-export const registerCoach = async (formData) => {
+export const registerCoach = (formData) => {
     return registerWithEndpoint("/api/v1/auth/register/coach", formData);
 };
 
