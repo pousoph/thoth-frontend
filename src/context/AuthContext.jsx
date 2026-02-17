@@ -12,18 +12,20 @@ export const useAuth = () => {
 
 const TOKEN_KEY = "thoth_token";
 
+function getInitialUser() {
+    const token = localStorage.getItem(TOKEN_KEY);
+    if (!token) return null;
+    const stored = localStorage.getItem("thoth_user");
+    if (!stored) return { token };
+    try {
+        return { ...JSON.parse(stored), token };
+    } catch {
+        return { token };
+    }
+}
+
 export const AuthProvider = ({ children }) => {
-    const [user, setUser] = useState(() => {
-        const token = localStorage.getItem(TOKEN_KEY);
-        if (!token) return null;
-        const stored = localStorage.getItem("thoth_user");
-        if (!stored) return { token };
-        try {
-            return { ...JSON.parse(stored), token };
-        } catch {
-            return { token };
-        }
-    });
+    const [user, setUser] = useState(getInitialUser);
 
     const saveUser = useCallback((data) => {
         const { token, role, name, last_name, level } = data;
@@ -51,7 +53,7 @@ export const AuthProvider = ({ children }) => {
 
     const value = {
         user,
-        isAuthenticated: !!user?.token,
+        isAuthenticated: Boolean(user?.token),
         role: user?.role ?? null,
         level: user?.level ?? null,
         name: user?.name ?? null,

@@ -7,6 +7,23 @@ import { loginUser, getContestantProfile } from "../../services/authService.js";
 import { useAuth } from "../../context/AuthContext.jsx";
 import thothLogo from "../../assets/logos/thothLogo.png";
 
+const ROLE_REDIRECTS = {
+    coach: "/coach/dashboard",
+    admin: "/admin/dashboard",
+    contestant: "/dashboard"
+};
+
+async function resolveContestantLevel(token, loginLevel) {
+    let level = loginLevel ?? "aprendiz";
+    try {
+        const profile = await getContestantProfile(token);
+        if (profile?.level) level = profile.level;
+    } catch {
+        // Fallback: usar level del login si el perfil falla
+    }
+    return level;
+}
+
 export const Login = () => {
     const navigate = useNavigate();
     const location = useLocation();
@@ -44,31 +61,20 @@ export const Login = () => {
                 last_name: data.last_name
             });
 
-            if (data.role === "coach") {
-                navigate("/coach/dashboard", { replace: true });
-                return;
-            }
-
-            if (data.role === "admin") {
-                navigate("/admin/dashboard", { replace: true });
-                return;
-            }
-
-            if (data.role === "contestant") {
-                let level = data.level ?? "aprendiz";
-                try {
-                    const profile = await getContestantProfile(data.token);
-                    if (profile?.level) level = profile.level;
-                } catch {
-                    // Fallback: usar level del login si el perfil falla
+            const path = ROLE_REDIRECTS[data.role];
+            if (path) {
+                if (data.role === "contestant") {
+                    const level = await resolveContestantLevel(
+                        data.token,
+                        data.level
+                    );
+                    updateLevel(level);
                 }
-                updateLevel(level);
+                navigate(path, { replace: true });
+            } else {
                 navigate("/dashboard", { replace: true });
-                return;
             }
-
-            navigate("/dashboard", { replace: true });
-        } catch (err) {
+        } catch {
             setError("Usuario o contraseña incorrectos");
         } finally {
             setLoading(false);
