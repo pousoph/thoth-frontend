@@ -1,6 +1,64 @@
+/* Auth card wide layout for Register */
+.auth-card.auth-card--wide {
+    width: min(960px, 100% - 3rem);
+    padding: 0;
+    overflow: hidden;
+}
+
+.register-layout {
+    display: flex;
+    min-height: 420px;
+}
+
+.register-visual {
+    flex: 1.1;
+    padding: 2.5rem 2.2rem;
+    background: radial-gradient(circle at top left, #4b6fff 0%, #1c1c1c 55%, #000 100%);
+    color: #f5f5f5;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.register-visual-heading h2 {
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin: 0 0 0.5rem 0;
+}
+
+.register-visual-heading p {
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin: 0;
+    color: rgba(245, 245, 245, 0.85);
+}
+
+.register-visual-list {
+    margin: 1.8rem 0 0 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    font-size: 0.85rem;
+    color: rgba(245, 245, 245, 0.9);
+}
+
+.register-visual-list li::before {
+    content: "•";
+    margin-right: 0.5rem;
+    color: #9fb5ff;
+}
+
+.register-form-panel {
+    flex: 1;
+    padding: 2.4rem 2.2rem;
+    display: flex;
+    flex-direction: column;
+}
+
 .register-header {
-    text-align: center;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.2rem;
 }
 
 .register-header h1 {
@@ -15,10 +73,46 @@
     margin-top: 4px;
 }
 
+.register-account-toggle {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px;
+    border-radius: 999px;
+    background-color: rgba(240, 240, 240, 0.04);
+    border: 1px solid var(--color-border);
+    margin-bottom: 1.3rem;
+}
+
+.register-account-toggle__item {
+    border: none;
+    background: transparent;
+    padding: 0.4rem 0.95rem;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--color-text-muted);
+    cursor: pointer;
+    transition:
+        background-color 0.2s ease,
+        color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.register-account-toggle__item.is-active {
+    background-color: var(--color-primary);
+    color: #fff;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+}
+
+.register-account-toggle__item:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+}
+
 .stepper {
     display: flex;
     justify-content: space-between;
-    margin: 1.5rem 0 2rem;
+    margin: 0.5rem 0 1.8rem;
 }
 
 .stepper-item {
@@ -28,7 +122,6 @@
     color: var(--color-text-muted);
     position: relative;
 }
-
 
 .stepper-circle {
     width: 28px;
@@ -67,6 +160,7 @@
 .stepper-item.completed {
     color: var(--color-text-main);
 }
+
 .step-animate {
     animation: slideFade 0.4s ease;
 }
@@ -170,11 +264,6 @@
     border-color: var(--color-primary);
 }
 
-.register-header {
-    text-align: center;
-    margin-bottom: 1rem;
-}
-
 .step-container {
     display: flex;
     flex-direction: column;
@@ -201,5 +290,29 @@
     to {
         opacity: 1;
         transform: translateY(0);
+    }
+}
+
+@media (max-width: 900px) {
+    .auth-card.auth-card--wide {
+        width: min(440px, 100% - 2rem);
+    }
+
+    .register-layout {
+        flex-direction: column-reverse;
+    }
+
+    .register-visual {
+        padding: 1.75rem 1.6rem;
+        min-height: 160px;
+    }
+
+    .register-form-panel {
+        padding: 2rem 1.6rem 1.8rem;
+    }
+
+    .register-account-toggle {
+        width: 100%;
+        justify-content: space-between;
     }
 }

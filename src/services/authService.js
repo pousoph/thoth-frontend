@@ -28,21 +28,21 @@ const toBirthDateApi = (value) => {
     return value;
 };
 
-export const registerContestant = async (formData) => {
-    const body = {
-        name: formData.name,
-        "last-name": formData.lastName,
-        username: formData.username,
-        password: formData.password,
-        email: formData.email,
-        "birth-date": toBirthDateApi(formData.birthDate),
-        size: formData.size,
-        "codeforces-handle": formData.codeforcesHandle,
-        gender: formData.gender
-    };
+const buildRegisterBody = (formData) => ({
+    name: formData.name,
+    "last-name": formData.lastName,
+    username: formData.username,
+    password: formData.password,
+    email: formData.email,
+    "birth-date": toBirthDateApi(formData.birthDate),
+    size: formData.size,
+    "codeforces-handle": formData.codeforcesHandle,
+    gender: formData.gender
+});
 
-    const url = `${API_BASE_URL}/api/v1/auth/register/contestant`;
-
+const registerWithEndpoint = async (endpoint, formData) => {
+    const body = buildRegisterBody(formData);
+    const url = `${API_BASE_URL}${endpoint}`;
 
     const response = await fetch(
         url,
@@ -64,6 +64,14 @@ export const registerContestant = async (formData) => {
     }
 
     return data;
+};
+
+export const registerContestant = async (formData) => {
+    return registerWithEndpoint("/api/v1/auth/register/contestant", formData);
+};
+
+export const registerCoach = async (formData) => {
+    return registerWithEndpoint("/api/v1/auth/register/coach", formData);
 };
 
 const getDirectMessage = (data) => data.message ?? data.error ?? data.detail;

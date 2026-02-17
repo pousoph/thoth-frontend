@@ -1,5 +1,5 @@
 import { useState, useCallback } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import { AuthLayout } from "../../components/layout/AuthLayout.jsx";
 import { Input } from "../../components/ui/Input.jsx";
 import { Button } from "../../components/ui/Button.jsx";
@@ -9,6 +9,7 @@ import thothLogo from "../../assets/logos/thothLogo.png";
 export const Login = () => {
 
     const navigate = useNavigate();
+    const location = useLocation();
 
     const [formData, setFormData] = useState({
         username: "",
@@ -17,6 +18,8 @@ export const Login = () => {
 
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
+    const initialInfoMessage = location.state?.message ?? "";
+    const [infoMessage] = useState(initialInfoMessage);
 
     const handleChange = useCallback((e) => {
         setFormData((prev) => ({
@@ -56,6 +59,11 @@ export const Login = () => {
             </div>
 
             <form className="auth-form" onSubmit={handleSubmit}>
+                {infoMessage && (
+                    <p className="auth-info">
+                        {infoMessage}
+                    </p>
+                )}
                 <Input
                     label="Correo institucional"
                     type="text"
