@@ -12,6 +12,20 @@ export const useAuth = () => {
 
 const TOKEN_KEY = "thoth_token";
 
+function buildAuthValue(user, actions) {
+    const identity = user || {};
+    return {
+        user,
+        isAuthenticated: Boolean(identity.token),
+        role: identity.role || null,
+        level: identity.level || null,
+        name: identity.name || null,
+        last_name: identity.last_name || null,
+        token: identity.token || null,
+        ...actions
+    };
+}
+
 function getInitialUser() {
     const token = localStorage.getItem(TOKEN_KEY);
     if (!token) return null;
@@ -51,18 +65,7 @@ export const AuthProvider = ({ children }) => {
         setUser(null);
     }, []);
 
-    const value = {
-        user,
-        isAuthenticated: Boolean(user?.token),
-        role: user?.role ?? null,
-        level: user?.level ?? null,
-        name: user?.name ?? null,
-        last_name: user?.last_name ?? null,
-        token: user?.token ?? null,
-        saveUser,
-        updateLevel,
-        logout
-    };
+    const value = buildAuthValue(user, { saveUser, updateLevel, logout });
 
     return (
         <AuthContext.Provider value={value}>
