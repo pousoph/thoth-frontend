@@ -17,8 +17,29 @@ export const loginUser = async (username, password) => {
     }
 
     const data = await response.json();
-    localStorage.setItem("token", data.token);
     return data;
+};
+
+/**
+ * Obtiene el perfil del competidor (incluyendo level) mediante segunda petición.
+ * Solo para usuarios con role "contestant".
+ * @param {string} token - JWT del usuario autenticado
+ * @returns {Promise<{level: string}>}
+ */
+export const getContestantProfile = async (token) => {
+    const response = await fetch(`${API_BASE_URL}/api/v1/contestant/profile`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+        }
+    });
+
+    if (!response.ok) {
+        throw new Error("No se pudo obtener el perfil del competidor");
+    }
+
+    return response.json();
 };
 /** Converts YYYY-MM-DD (date input) to DD-MM-YYYY (API). */
 const toBirthDateApi = (value) => {

@@ -38,7 +38,7 @@ const VerifyAccount = () => {
         try {
             await verifyAccount(code.trim(), Number(userId));
             sessionStorage.removeItem(PENDING_VERIFY_STORAGE_KEY);
-            navigate("/login", { state: { message: "Cuenta verificada. Ya puedes iniciar sesión." } });
+            navigate("/login", { state: { message: "Cuenta verificada exitosamente." } });
         } catch (err) {
             setError(err.message || "No se pudo verificar la cuenta.");
         } finally {
