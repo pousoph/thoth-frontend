@@ -12,10 +12,20 @@ export const ProtectedRoute = ({ children }) => {
 
 /**
  * GuestRoute — redirige a /dashboard si el usuario YA está autenticado.
+ * Dependiendo del rol, redirige a admin o contestant.
  */
 export const GuestRoute = ({ children }) => {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
-  return isAuthenticated ? <Navigate to="/dashboard" replace /> : children;
+  const user = useAuthStore((s) => s.user);
+
+  if (isAuthenticated) {
+    if (user?.role === 'admin') {
+      return <Navigate to="/admin/dashboard" replace />;
+    }
+    return <Navigate to="/contestant/dashboard" replace />;
+  }
+
+  return children;
 };
 
 /**

@@ -35,9 +35,16 @@ import useAuthStore from '@/store/authStore';
 
 const RoleRedirect = () => {
   const role = useAuthStore((s) => s.getRole());
+  if (role === 'admin') return <Navigate to="/admin/dashboard" replace />;
   if (role === 'coach') return <Navigate to="/coach/dashboard" replace />;
   return <Navigate to="/contestant/dashboard" replace />;
 };
+
+// ── Admin module ──────────────────────────────────────────────────────────
+import AdminLayout          from '@/layouts/admin/AdminLayout';
+import AdminDashboardPage   from '@/features/admin/pages/AdminDashboardPage';
+import AdminCoachQueuePage  from '@/features/admin/pages/AdminCoachQueuePage';
+import AdminContestsPage    from '@/features/admin/pages/AdminContestsPage';
 
 // ── App ───────────────────────────────────────────────────────────────────
 const App = () => (
@@ -62,6 +69,17 @@ const App = () => (
         <Route path="teams"       element={<TeamsPageContestant />} />
         <Route path="metrics"     element={<MetricsPage />} />
         <Route path="profile"     element={<ProfilePage />} />
+      </Route>
+
+      {/* ── Admin routes ── */}
+      <Route
+        path="/admin"
+        element={<ProtectedRoute><AdminLayout /></ProtectedRoute>}
+      >
+        <Route index                element={<Navigate to="dashboard" replace />} />
+        <Route path="dashboard"     element={<AdminDashboardPage />} />
+        <Route path="coaches"       element={<AdminCoachQueuePage />} />
+        <Route path="contests"      element={<AdminContestsPage />} />
       </Route>
 
       {/* ── Coach routes ── */}

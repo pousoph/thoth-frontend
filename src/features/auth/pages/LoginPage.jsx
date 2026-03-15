@@ -6,6 +6,7 @@ import PasswordField from '../components/PasswordField';
 import LoadingButton from '../components/LoadingButton';
 import { FormError } from '../components/FormAlerts';
 import { login } from '../services/authService';
+import useAuthStore from '@/store/authStore';
 
 const UserIcon = () => (
   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
@@ -35,7 +36,12 @@ const LoginPage = () => {
     setLoading(false);
 
     if (result.success) {
-      navigate('/dashboard', { replace: true });
+      const role = useAuthStore.getState().getRole();
+      if (role === 'admin') {
+        navigate('/admin/dashboard', { replace: true });
+      } else {
+        navigate('/contestant/dashboard', { replace: true });
+      }
       return;
     }
 
