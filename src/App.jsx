@@ -21,6 +21,12 @@ import TeamsPage        from '@/features/contestant/pages/TeamsPage';
 import MetricsPage      from '@/features/contestant/pages/MetricsPage';
 import ProfilePage      from '@/features/contestant/pages/ProfilePage';
 
+// ── Admin module ──────────────────────────────────────────────────────────
+import AdminLayout          from '@/layouts/admin/AdminLayout';
+import AdminDashboardPage   from '@/features/admin/pages/AdminDashboardPage';
+import AdminCoachQueuePage  from '@/features/admin/pages/AdminCoachQueuePage';
+import AdminContestsPage    from '@/features/admin/pages/AdminContestsPage';
+
 // ── App ───────────────────────────────────────────────────────────────────
 const App = () => (
   <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
@@ -44,6 +50,17 @@ const App = () => (
         <Route path="teams"         element={<TeamsPage />} />
         <Route path="metrics"       element={<MetricsPage />} />
         <Route path="profile"       element={<ProfilePage />} />
+      </Route>
+
+      {/* ── Admin routes ── */}
+      <Route
+        path="/admin"
+        element={<ProtectedRoute><AdminLayout /></ProtectedRoute>}
+      >
+        <Route index                element={<Navigate to="dashboard" replace />} />
+        <Route path="dashboard"     element={<AdminDashboardPage />} />
+        <Route path="coaches"       element={<AdminCoachQueuePage />} />
+        <Route path="contests"      element={<AdminContestsPage />} />
       </Route>
 
       {/* ── Legacy /dashboard redirect ── */}
