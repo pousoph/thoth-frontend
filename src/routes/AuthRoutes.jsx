@@ -17,3 +17,16 @@ export const GuestRoute = ({ children }) => {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   return isAuthenticated ? <Navigate to="/dashboard" replace /> : children;
 };
+
+/**
+ * CoachRoute — acceso exclusivo para rol "coach".
+ * No autenticado → /login
+ * Autenticado pero no es coach → /contestant/dashboard
+ */
+export const CoachRoute = ({ children }) => {
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const role            = useAuthStore((s) => s.getRole());
+  if (!isAuthenticated) return <Navigate to="/login" replace />;
+  if (role !== 'coach')  return <Navigate to="/contestant/dashboard" replace />;
+  return children;
+};
