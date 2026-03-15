@@ -48,7 +48,7 @@ import AdminContestsPage    from '@/features/admin/pages/AdminContestsPage';
 
 // ── App ───────────────────────────────────────────────────────────────────
 const App = () => (
-  <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+  <BrowserRouter basename={import.meta.env.BASE_URL} future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
     <Routes>
       {/* ── Auth routes ── */}
       <Route element={<AuthLayout />}>
