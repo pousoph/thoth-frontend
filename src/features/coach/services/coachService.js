@@ -16,6 +16,22 @@ const normalizeContestant = (c) => ({
   level:             c.level                  ?? '',
 });
 
+// ── Normaliza campos de equipo (el backend Go varía el casing por endpoint) ──
+const normalizeTeam = (t) => {
+  const rate = t.task_completion_rate ?? t['task-completion-rate'] ?? t.taskCompletionRate ?? 0;
+  return {
+    ...t,
+    team_id:              t.team_id              ?? t['team-id']              ?? t.teamId,
+    team_name:            t.team_name            ?? t['team-name']            ?? t.teamName            ?? '',
+    is_active:            t.is_active            ?? t['is-active']            ?? t.isActive             ?? true,
+    member_count:         t.member_count         ?? t['member-count']         ?? t.memberCount          ?? 0,
+    total_balloons:       t.total_balloons       ?? t['total-balloons']       ?? t.totalBalloons        ?? 0,
+    task_completion_rate: rate > 1 ? rate / 100 : rate,
+    league_points:        t.league_points        ?? t['league-points']        ?? t.leaguePoints         ?? 0,
+    league_rank:          t.league_rank          ?? t['league-rank']          ?? t.leagueRank,
+  };
+};
+
 // ─────────────────────────────────────────────────────────────────────────────
 // GET /dashboard  —  HU-10 (Coach)
 // Respuesta: { role, dashboard: { teams[], league_comparison } }
@@ -23,7 +39,9 @@ const normalizeContestant = (c) => ({
 export const fetchCoachDashboard = async () => {
   try {
     const { data } = await apiClient.get('/dashboard');
-    return { success: true, data: data.dashboard };
+    const dashboard = data.dashboard ?? {};
+    const teams = Array.isArray(dashboard.teams) ? dashboard.teams.map(normalizeTeam) : [];
+    return { success: true, data: { ...dashboard, teams } };
   } catch (err) {
     return { success: false, message: getApiError(err, 'Error al cargar el dashboard') };
   }
@@ -105,10 +123,10 @@ export const fetchTeamTasks = async (teamId) => {
 export const createTask = async ({ teamId, title, description, limitDate }) => {
   try {
     const { data } = await apiClient.post('/tasks', {
-      team_id:    teamId,
+      'team-id':    teamId,
       title,
       description,
-      limit_date: limitDate,
+      'limit-date': limitDate,
     });
     return { success: true, data };
   } catch (err) {
@@ -125,7 +143,7 @@ export const updateTask = async (taskId, { title, description, limitDate }) => {
     const { data } = await apiClient.put(`/tasks/${taskId}`, {
       title,
       description,
-      limit_date: limitDate,
+      'limit-date': limitDate,
     });
     return { success: true, data };
   } catch (err) {
@@ -152,7 +170,7 @@ export const deleteTask = async (taskId) => {
 export const undoTaskCompletion = async (taskId, contestantId) => {
   try {
     const { data } = await apiClient.post(`/tasks/${taskId}/undo-completion`, {
-      contestant_id: contestantId,
+      'contestant-id': contestantId,
     });
     return { success: true, message: data.message };
   } catch (err) {
@@ -168,8 +186,8 @@ export const undoTaskCompletion = async (taskId, contestantId) => {
 export const changeContestantLevel = async (contestantId, newLevel, justification) => {
   try {
     const { data } = await apiClient.put('/contestants/level', {
-      contestant_id: contestantId,
-      new_level:     newLevel,
+      'contestant-id': contestantId,
+      'new-level':     newLevel,
       justification,
     });
     return { success: true, message: data.message };
@@ -198,6 +216,14 @@ export const fetchLevelChanges = async (page = 1, pageSize = 10) => {
   }
 };
 
+// ── Normaliza fila de liga (el backend Go varía el casing) ──
+const normalizeLeagueRow = (r) => ({
+  ...r,
+  team_id:           r.team_id            ?? r['team-id']            ?? r.teamId,
+  team_name:         r.team_name          ?? r['team-name']          ?? r.teamName          ?? '',
+  is_icpc_qualified: r.is_icpc_qualified  ?? r['is-icpc-qualified']  ?? r.isIcpcQualified   ?? false,
+});
+
 // ─────────────────────────────────────────────────────────────────────────────
 // GET /league  —  HU-07-1 (público, no requiere auth)
 // Respuesta: { columns[], rows[] }
@@ -205,7 +231,8 @@ export const fetchLevelChanges = async (page = 1, pageSize = 10) => {
 export const fetchLeague = async () => {
   try {
     const { data } = await apiClient.get('/league');
-    return { success: true, data };
+    const rows = Array.isArray(data.rows) ? data.rows.map(normalizeLeagueRow) : [];
+    return { success: true, data: { ...data, rows } };
   } catch (err) {
     return { success: false, message: getApiError(err, 'Error al cargar la liga') };
   }

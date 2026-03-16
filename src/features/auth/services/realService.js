@@ -19,13 +19,15 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// ── 401 → limpiar sesión y redirigir ─────────────────────────────────────
+// ── 401 → limpiar sesión y redirigir (solo para rutas protegidas) ─────────
 api.interceptors.response.use(
   (res) => res,
   (err) => {
-    if (err.response?.status === 401) {
+    const url = err?.config?.url ?? '';
+    const isAuthRoute = url.includes('/auth/');
+    if (err.response?.status === 401 && !isAuthRoute) {
       useAuthStore.getState().clearAuth();
-      window.location.href = '/login';
+      window.location.href = import.meta.env.BASE_URL + 'login';
     }
     return Promise.reject(err);
   }
@@ -46,18 +48,23 @@ const getError = (err, fallback = 'Ocurrió un error inesperado') =>
 export const login = async (username, password) => {
   try {
     const { data } = await api.post('/auth/login', { username, password });
-    // level llega en minúsculas del backend (basica, intermedia, avanzada)
-    // Lo normalizamos para el sistema de temas CSS
     const { token, role, level } = data;
-    // El backend también retorna el handle de CF — puede venir como
-    // "codeforces-handle" o "codeforces_handle" según la versión del backend
     const codeforcesHandle = data['codeforces-handle'] ?? data['codeforces_handle'] ?? null;
     const levelMap = {
       basica: 'Basica', intermedia: 'Intermedia',
       avanzada: 'Avanzada', aprendiz: 'Aprendiz', elite: 'Elite',
     };
     const normalizedLevel = levelMap[level?.toLowerCase()] ?? level ?? null;
-    useAuthStore.getState().setAuth({ username, role, level: normalizedLevel, codeforcesHandle }, token);
+    // Extraer id del usuario: del body de login o del payload del JWT
+    let userId = data.id ?? data.user_id ?? data['user-id'] ?? null;
+    if (userId == null && token) {
+      try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        userId = payload.id ?? payload.user_id ?? payload.sub ?? null;
+      } catch { /* token inválido, ignorar */ }
+    }
+    if (userId != null) userId = Number(userId);
+    useAuthStore.getState().setAuth({ id: userId, username, role, level: normalizedLevel, codeforcesHandle }, token);
     return { success: true };
   } catch (err) {
     const status = err?.response?.status;

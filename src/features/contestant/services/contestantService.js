@@ -14,24 +14,54 @@
 
 import apiClient, { getApiError } from '@/services/apiClient';
 
+// ── Helper: pick first defined value across naming variants ──
+const pick = (obj, ...keys) => {
+  for (const k of keys) { if (obj[k] !== undefined) return obj[k]; }
+  return undefined;
+};
+
+// ── Normaliza dashboard del competidor (backend Go usa kebab-case) ──
+const normalizeDashboard = (d) => {
+  if (!d) return d;
+
+  const taskStats = pick(d, 'task_stats', 'task-stats', 'taskStats') ?? {};
+  const contestPerf = pick(d, 'contest_performance', 'contest-performance', 'contestPerformance') ?? [];
+  const levelHistory = pick(d, 'level_history', 'level-history', 'levelHistory') ?? [];
+
+  return {
+    team_name:          pick(d, 'team_name', 'team-name', 'teamName') ?? '',
+    current_level:      pick(d, 'current_level', 'current-level', 'currentLevel') ?? '',
+    team_league_rank:   pick(d, 'team_league_rank', 'team-league-rank', 'teamLeagueRank'),
+    team_league_points: pick(d, 'team_league_points', 'team-league-points', 'teamLeaguePoints') ?? 0,
+    task_stats: {
+      total:           taskStats.total           ?? 0,
+      completed:       taskStats.completed       ?? 0,
+      pending:         taskStats.pending         ?? 0,
+      completion_rate: ((r) => r > 1 ? r / 100 : r)(pick(taskStats, 'completion_rate', 'completion-rate', 'completionRate') ?? 0),
+    },
+    contest_performance: contestPerf.map((c) => ({
+      contest_id:   pick(c, 'contest_id', 'contest-id', 'contestId'),
+      contest_name: pick(c, 'contest_name', 'contest-name', 'contestName') ?? '',
+      balloons:     c.balloons ?? 0,
+      position:     c.position ?? 0,
+      score:        c.score    ?? 0,
+    })),
+    level_history: levelHistory.map((e) => ({
+      old_level:  pick(e, 'old_level', 'old-level', 'oldLevel') ?? '',
+      new_level:  pick(e, 'new_level', 'new-level', 'newLevel') ?? '',
+      reasons:    e.reasons ?? '',
+      changed_at: pick(e, 'changed_at', 'changed-at', 'changedAt') ?? '',
+    })),
+  };
+};
+
 // ─────────────────────────────────────────────────────────────────────────────
 // DASHBOARD  —  GET /dashboard
-//
-// Respuesta (200):
-// {
-//   role: "contestant",
-//   dashboard: {
-//     team_name, current_level, team_league_rank, team_league_points,
-//     contest_performance: [{ contest_id, contest_name, balloons, position, score }],
-//     task_stats: { total, completed, pending, completion_rate },
-//     level_history: [{ old_level, new_level, reasons, changed_at }]
-//   }
-// }
 // ─────────────────────────────────────────────────────────────────────────────
 export const fetchDashboard = async () => {
   try {
     const { data } = await apiClient.get('/dashboard');
-    return { success: true, data: data.dashboard };
+    return { success: true, data: normalizeDashboard(data.dashboard) };
   } catch (err) {
     return { success: false, message: getApiError(err, 'Error al cargar el dashboard') };
   }
@@ -49,10 +79,24 @@ export const fetchDashboard = async () => {
 // El estado "completado" se determina buscando el contestant_id del usuario
 // actual en el array completions con is_completed === true.
 // ─────────────────────────────────────────────────────────────────────────────
+// ── Normaliza tarea (kebab → snake) ──
+// El backend para /tasks/me devuelve is-completed y completed-at directamente en la tarea
+// (no en un array completions). Normalizamos a un campo plano is_completed.
+const normalizeTask = (t) => ({
+  ...t,
+  coach_id:     pick(t, 'coach_id', 'coach-id', 'coachId'),
+  team_id:      pick(t, 'team_id', 'team-id', 'teamId'),
+  limit_date:   pick(t, 'limit_date', 'limit-date', 'limitDate') ?? '',
+  created_at:   pick(t, 'created_at', 'created-at', 'createdAt') ?? '',
+  is_completed: !!(pick(t, 'is_completed', 'is-completed', 'isCompleted')),
+  completed_at: pick(t, 'completed_at', 'completed-at', 'completedAt') ?? null,
+});
+
 export const fetchMyTasks = async () => {
   try {
     const { data } = await apiClient.get('/tasks/me');
-    return { success: true, data };
+    const tasks = Array.isArray(data) ? data.map(normalizeTask) : [];
+    return { success: true, data: tasks };
   } catch (err) {
     return { success: false, message: getApiError(err, 'Error al cargar las tareas') };
   }
@@ -84,10 +128,32 @@ export const completeTask = async (taskId) => {
 // }
 // Respuesta (404): { error: "team not found" }  → se retorna data: null
 // ─────────────────────────────────────────────────────────────────────────────
+// ── Normaliza persona (coach / teammate) ──
+const normalizePerson = (p) => {
+  if (!p) return p;
+  return {
+    name:              p.name ?? '',
+    last_name:         pick(p, 'last_name', 'last-name', 'lastName') ?? '',
+    codeforces_handle: pick(p, 'codeforces_handle', 'codeforces-handle', 'codeforcesHandle') ?? '',
+    level:             p.level ?? '',
+  };
+};
+
+// ── Normaliza equipo del competidor ──
+const normalizeMyTeam = (t) => {
+  if (!t) return t;
+  return {
+    team_name: pick(t, 'team_name', 'team-name', 'teamName') ?? '',
+    is_active: !!(pick(t, 'is_active', 'is-active', 'isActive') ?? true),
+    coach:     normalizePerson(t.coach),
+    teammates: (t.teammates ?? []).map(normalizePerson),
+  };
+};
+
 export const fetchMyTeam = async () => {
   try {
     const { data } = await apiClient.get('/teams/me');
-    return { success: true, data };
+    return { success: true, data: normalizeMyTeam(data) };
   } catch (err) {
     if (err.response?.status === 404) {
       return { success: true, data: null };
@@ -109,10 +175,19 @@ export const fetchMyTeam = async () => {
 //   }]
 // }
 // ─────────────────────────────────────────────────────────────────────────────
+// ── Normaliza fila de liga (el backend Go varía el casing) ──
+const normalizeLeagueRow = (r) => ({
+  ...r,
+  team_id:           r.team_id            ?? r['team-id']            ?? r.teamId,
+  team_name:         r.team_name          ?? r['team-name']          ?? r.teamName          ?? '',
+  is_icpc_qualified: r.is_icpc_qualified  ?? r['is-icpc-qualified']  ?? r.isIcpcQualified   ?? false,
+});
+
 export const fetchLeague = async () => {
   try {
     const { data } = await apiClient.get('/league');
-    return { success: true, data };
+    const rows = Array.isArray(data.rows) ? data.rows.map(normalizeLeagueRow) : [];
+    return { success: true, data: { ...data, rows } };
   } catch (err) {
     return { success: false, message: getApiError(err, 'Error al cargar la liga') };
   }

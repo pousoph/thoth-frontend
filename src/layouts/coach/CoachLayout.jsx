@@ -51,12 +51,39 @@ const IconBell = () => (
 );
 
 // ── Nav config ─────────────────────────────────────────────────────────────────
+const IconLeague = () => (
+  <svg className="co-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M6 9H4.5a2.5 2.5 0 010-5H6"/><path d="M18 9h1.5a2.5 2.5 0 000-5H18"/>
+    <path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/>
+    <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/>
+    <path d="M18 2H6v7a6 6 0 0012 0V2z"/>
+  </svg>
+);
+
+const IconAscensos = () => (
+  <svg className="co-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="18 15 12 9 6 15"/>
+    <line x1="12" y1="9" x2="12" y2="21"/>
+    <line x1="4" y1="3" x2="20" y2="3"/>
+  </svg>
+);
+
+const IconCF = () => (
+  <svg className="co-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="10"/>
+    <path d="M8 16V8h4"/><path d="M8 12h3"/><path d="M16 16V8h-3v3h2"/>
+  </svg>
+);
+
 const NAV_ITEMS = [
   { to: '/coach/dashboard',   label: 'Dashboard',     Icon: IconDashboard  },
   { to: '/coach/teams',       label: 'Equipos',       Icon: IconTeams      },
   { to: '/coach/competitors', label: 'Competidores',  Icon: IconCompetitors },
   { to: '/coach/tasks',       label: 'Tareas',        Icon: IconTasks      },
   { to: '/coach/analytics',   label: 'Estadísticas',  Icon: IconAnalytics  },
+  { to: '/coach/league',      label: 'Liga',           Icon: IconLeague    },
+  { to: '/coach/ascensos',    label: 'Ascensos',       Icon: IconAscensos  },
+  { to: '/coach/cf-ranking',  label: 'Ranking CF',     Icon: IconCF        },
 ];
 
 const PAGE_TITLES = {
@@ -65,6 +92,9 @@ const PAGE_TITLES = {
   '/coach/competitors': { title: 'Competidores',      breadcrumb: 'Gestión de competidores' },
   '/coach/tasks':       { title: 'Tareas',            breadcrumb: 'Asignación de tareas' },
   '/coach/analytics':   { title: 'Estadísticas',      breadcrumb: 'Análisis de rendimiento' },
+  '/coach/league':      { title: 'Liga',              breadcrumb: 'Tabla de posiciones' },
+  '/coach/ascensos':    { title: 'Ascensos',          breadcrumb: 'Historial de cambios de nivel' },
+  '/coach/cf-ranking':  { title: 'Ranking CF',        breadcrumb: 'Ranking de Codeforces' },
 };
 
 // ── Sidebar ────────────────────────────────────────────────────────────────────

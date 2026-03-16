@@ -136,8 +136,13 @@ const RegisterPage = () => {
     setLoading(false);
 
     if (result.success) {
-      setSuccess('¡Cuenta creada! Revisa tu correo para obtener el código de activación.');
-      setTimeout(() => navigate('/verify-account'), 2500);
+      if (role === 'coach') {
+        setSuccess('¡Solicitud enviada! Un administrador revisará tu registro. Te notificaremos por correo cuando sea aprobado.');
+        setTimeout(() => navigate('/login'), 3500);
+      } else {
+        setSuccess('¡Cuenta creada! Revisa tu correo para obtener el código de activación.');
+        setTimeout(() => navigate('/verify-account'), 2500);
+      }
     } else {
       setApiError(result.message);
     }
