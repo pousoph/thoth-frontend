@@ -39,6 +39,8 @@ const LoginPage = () => {
       const role = useAuthStore.getState().getRole();
       if (role === 'admin') {
         navigate('/admin/dashboard', { replace: true });
+      } else if (role === 'coach') {
+        navigate('/coach/dashboard', { replace: true });
       } else {
         navigate('/contestant/dashboard', { replace: true });
       }

@@ -101,8 +101,15 @@ const TaskCard = ({ task, teamName, teamId, onDelete, navigate }) => {
   const done = task.completions?.filter((c) => c.is_completed).length ?? 0;
   const total = task.completions?.length ?? 0;
 
-  // Extract first URL from description
-  const urlMatch = task.description?.match(/https?:\/\/[^\s]+/);
+  // Extract first URL from description (only allow http/https)
+  const urlRaw = task.description?.match(/https?:\/\/[^\s]+/);
+  let urlMatch = null;
+  if (urlRaw) {
+    try {
+      const parsed = new URL(urlRaw[0]);
+      if (parsed.protocol === 'https:' || parsed.protocol === 'http:') urlMatch = [parsed.href];
+    } catch { /* invalid URL, ignore */ }
+  }
 
   return (
     <div className="co-task-card">

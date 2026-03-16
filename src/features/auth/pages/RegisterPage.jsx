@@ -131,8 +131,6 @@ const RegisterPage = () => {
 
     setLoading(true);
     const payload = buildPayload(values);
-    console.info('[THOTH] Registro payload:', JSON.stringify(payload));
-
     const fn = role === 'contestant' ? registerContestant : registerCoach;
     const result = await fn(payload);
     setLoading(false);
