@@ -11,17 +11,15 @@ export const ProtectedRoute = ({ children }) => {
 };
 
 /**
- * GuestRoute — redirige a /dashboard si el usuario YA está autenticado.
- * Dependiendo del rol, redirige a admin o contestant.
+ * GuestRoute — redirige según rol si el usuario YA está autenticado.
  */
 export const GuestRoute = ({ children }) => {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
-  const user = useAuthStore((s) => s.user);
+  const role = useAuthStore((s) => s.getRole());
 
   if (isAuthenticated) {
-    if (user?.role === 'admin') {
-      return <Navigate to="/admin/dashboard" replace />;
-    }
+    if (role === 'admin') return <Navigate to="/admin/dashboard" replace />;
+    if (role === 'coach') return <Navigate to="/coach/dashboard" replace />;
     return <Navigate to="/contestant/dashboard" replace />;
   }
 
@@ -29,9 +27,18 @@ export const GuestRoute = ({ children }) => {
 };
 
 /**
+ * AdminRoute — acceso exclusivo para rol "admin".
+ */
+export const AdminRoute = ({ children }) => {
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const role            = useAuthStore((s) => s.getRole());
+  if (!isAuthenticated) return <Navigate to="/login" replace />;
+  if (role !== 'admin')  return <Navigate to="/contestant/dashboard" replace />;
+  return children;
+};
+
+/**
  * CoachRoute — acceso exclusivo para rol "coach".
- * No autenticado → /login
- * Autenticado pero no es coach → /contestant/dashboard
  */
 export const CoachRoute = ({ children }) => {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);

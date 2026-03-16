@@ -11,7 +11,7 @@ import LoginPage          from '@/features/auth/pages/LoginPage';
 import RegisterPage       from '@/features/auth/pages/RegisterPage';
 import VerifyAccountPage  from '@/features/auth/pages/VerifyAccountPage';
 import ForgotPasswordPage from '@/features/auth/pages/ForgotPasswordPage';
-import { ProtectedRoute, GuestRoute, CoachRoute } from '@/routes/AuthRoutes';
+import { ProtectedRoute, GuestRoute, CoachRoute, AdminRoute } from '@/routes/AuthRoutes';
 
 // ── Contestant module ─────────────────────────────────────────────────────
 import CompetitorLayout from '@/layouts/contestant/CompetitorLayout';
@@ -48,7 +48,7 @@ import AdminContestsPage    from '@/features/admin/pages/AdminContestsPage';
 
 // ── App ───────────────────────────────────────────────────────────────────
 const App = () => (
-  <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+  <BrowserRouter basename={import.meta.env.BASE_URL} future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
     <Routes>
       {/* ── Auth routes ── */}
       <Route element={<AuthLayout />}>
@@ -74,7 +74,7 @@ const App = () => (
       {/* ── Admin routes ── */}
       <Route
         path="/admin"
-        element={<ProtectedRoute><AdminLayout /></ProtectedRoute>}
+        element={<AdminRoute><AdminLayout /></AdminRoute>}
       >
         <Route index                element={<Navigate to="dashboard" replace />} />
         <Route path="dashboard"     element={<AdminDashboardPage />} />

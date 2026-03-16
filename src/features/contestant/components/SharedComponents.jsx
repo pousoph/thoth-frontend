@@ -66,10 +66,7 @@ export const ActivityFeed = ({ items = [], loading }) => {
       {items.map((item) => (
         <div key={item.id} className="cl-activity-item">
           <div className={`cl-activity-dot cl-activity-dot--${item.dot ?? 'info'}`} />
-          <div
-            className="cl-activity-text"
-            dangerouslySetInnerHTML={{ __html: item.text }}
-          />
+          <div className="cl-activity-text">{item.text}</div>
           <div className="cl-activity-time">{item.time}</div>
         </div>
       ))}
