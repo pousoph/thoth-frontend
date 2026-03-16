@@ -2,34 +2,30 @@ import React, { useEffect, useState } from 'react';
 import { fetchLevelChanges } from '../services/sharedService';
 
 const LEVEL_COLORS = {
-  aprendiz: '#f97316', basica: '#3b82f6', 'básica': '#3b82f6',
-  intermedia: '#a855f7', avanzada: '#ef4444', elite: '#c9a84c',
+  rookie: '#9ca3af', aprendiz: '#f97316',
+  basica: '#3b82f6', 'básica': '#3b82f6',
+  intermediate: '#a855f7', intermedia: '#a855f7',
+  advanced: '#ef4444', avanzada: '#ef4444',
+  elite: '#c9a84c',
 };
 
 const LevelChangesPage = () => {
   const [entries, setEntries] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError]     = useState('');
-  const [page, setPage]       = useState(1);
-  const [total, setTotal]     = useState(0);
-  const pageSize = 20;
 
-  const load = async (p) => {
-    setLoading(true);
-    const res = await fetchLevelChanges(p, pageSize);
-    if (res.success) {
-      setEntries(res.data);
-      setPage(res.page);
-      setTotal(res.total);
-    } else {
-      setError(res.message);
-    }
-    setLoading(false);
-  };
-
-  useEffect(() => { load(1); }, []);
-
-  const totalPages = Math.ceil(total / pageSize);
+  useEffect(() => {
+    (async () => {
+      setLoading(true);
+      const res = await fetchLevelChanges();
+      if (res.success) {
+        setEntries(res.data);
+      } else {
+        setError(res.message);
+      }
+      setLoading(false);
+    })();
+  }, []);
 
   return (
     <div>
@@ -77,7 +73,7 @@ const LevelChangesPage = () => {
           borderRadius: 'var(--radius-xl)', padding: '8px 24px',
         }}>
           {entries.map((entry, i) => (
-            <div key={i} style={{
+            <div key={entry.id ?? i} style={{
               display: 'flex', alignItems: 'flex-start', gap: 14,
               padding: '16px 0',
               borderBottom: i < entries.length - 1 ? '1px solid var(--color-border)' : 'none',
@@ -89,7 +85,9 @@ const LevelChangesPage = () => {
               }} />
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-text-primary)' }}>
-                  {entry.contestant_name}
+                  <span style={{ color: 'var(--color-text-muted)', fontSize: 12 }}>
+                    Competidor #{entry.contestant_id}
+                  </span>
                   <span style={{ color: 'var(--color-text-muted)', margin: '0 8px', fontWeight: 400 }}>·</span>
                   <span style={{
                     color: LEVEL_COLORS[entry.old_level?.toLowerCase()] ?? 'var(--color-text-muted)',
@@ -105,63 +103,27 @@ const LevelChangesPage = () => {
                     {entry.new_level}
                   </span>
                 </div>
-                {entry.justification && (
+                {entry.reasons && (
                   <div style={{
                     fontSize: 13, color: 'var(--color-text-secondary)',
                     marginTop: 4, lineHeight: 1.6,
                   }}>
-                    {entry.justification}
+                    {entry.reasons}
                   </div>
                 )}
                 <div style={{ fontSize: 11, color: 'var(--color-text-muted)', marginTop: 4 }}>
-                  por {entry.changed_by || '—'}
+                  por Coach #{entry.coach_id ?? '—'}
                 </div>
               </div>
               <div style={{ fontSize: 11, color: 'var(--color-text-muted)', flexShrink: 0 }}>
-                {entry.changed_at
-                  ? new Date(entry.changed_at).toLocaleDateString('es-CO', {
+                {entry.created_at
+                  ? new Date(entry.created_at).toLocaleDateString('es-CO', {
                       day: '2-digit', month: 'short', year: 'numeric',
                     })
                   : '—'}
               </div>
             </div>
           ))}
-
-          {/* Paginacion */}
-          {totalPages > 1 && (
-            <div style={{
-              display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 16,
-              padding: '16px 0', borderTop: '1px solid var(--color-border)',
-            }}>
-              <button
-                disabled={page <= 1}
-                onClick={() => load(page - 1)}
-                style={{
-                  padding: '6px 16px', fontSize: 12, fontWeight: 600,
-                  background: page <= 1 ? 'var(--color-surface-3)' : 'var(--color-surface-4)',
-                  color: page <= 1 ? 'var(--color-text-muted)' : 'var(--color-text-primary)',
-                  border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)',
-                  cursor: page <= 1 ? 'not-allowed' : 'pointer',
-                  fontFamily: 'var(--font-body)',
-                }}
-              >Anterior</button>
-              <span style={{ fontSize: 12, color: 'var(--color-text-muted)' }}>
-                {page} / {totalPages}
-              </span>
-              <button
-                disabled={page >= totalPages}
-                onClick={() => load(page + 1)}
-                style={{
-                  padding: '6px 16px', fontSize: 12, fontWeight: 600,
-                  background: page >= totalPages ? 'var(--color-surface-3)' : 'var(--color-surface-4)',
-                  color: page >= totalPages ? 'var(--color-text-muted)' : 'var(--color-text-primary)',
-                  border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)',
-                  cursor: page >= totalPages ? 'not-allowed' : 'pointer',
-                  fontFamily: 'var(--font-body)',
-                }}
-              >Siguiente</button>
-            </div>
-          )}
         </div>
       )}
     </div>

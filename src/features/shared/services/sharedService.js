@@ -27,12 +27,13 @@ const normalizeLeagueRow = (r) => ({
 });
 
 const normalizeLevelChange = (e) => ({
-  contestant_name: pick(e, 'contestant_name', 'contestant-name', 'contestantName') ?? '',
-  old_level:       pick(e, 'old_level', 'old-level', 'oldLevel') ?? '',
-  new_level:       pick(e, 'new_level', 'new-level', 'newLevel') ?? '',
-  justification:   e.justification ?? '',
-  changed_by:      pick(e, 'changed_by', 'changed-by', 'changedBy') ?? '',
-  changed_at:      pick(e, 'changed_at', 'changed-at', 'changedAt') ?? '',
+  id:             e.id ?? null,
+  coach_id:       pick(e, 'coach_id', 'coach-id', 'coachId') ?? null,
+  contestant_id:  pick(e, 'contestant_id', 'contestant-id', 'contestantId') ?? null,
+  old_level:      pick(e, 'old_level', 'old-level', 'oldLevel') ?? '',
+  new_level:      pick(e, 'new_level', 'new-level', 'newLevel') ?? '',
+  reasons:        e.reasons ?? '',
+  created_at:     pick(e, 'created_at', 'created-at', 'createdAt') ?? '',
 });
 
 // GET /league
@@ -68,17 +69,11 @@ export const fetchCodeforcesRanking = async () => {
 };
 
 // GET /contestants/level-changes
-export const fetchLevelChanges = async (page = 1, pageSize = 20) => {
+export const fetchLevelChanges = async () => {
   try {
-    const { data } = await apiClient.get(
-      `/contestants/level-changes?page=${page}&page_size=${pageSize}`
-    );
-    return {
-      success: true,
-      data:  (data.data ?? []).map(normalizeLevelChange),
-      page:  data.page  ?? page,
-      total: data.total ?? 0,
-    };
+    const { data } = await apiClient.get('/contestants/level-changes');
+    const entries = Array.isArray(data) ? data.map(normalizeLevelChange) : [];
+    return { success: true, data: entries };
   } catch (err) {
     return { success: false, message: getApiError(err, 'Error al cargar historial de niveles') };
   }
