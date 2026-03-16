@@ -28,32 +28,15 @@ const useContestantStore = create((set, get) => ({
 
   /**
    * Marca optimistamente una tarea como completada en el store.
-   * Se pasa contestantId para ubicar la entrada correcta dentro de completions[].
-   * Si no existe la entrada se agrega con is_completed: true.
+   * El backend devuelve is_completed directamente en la tarea (no en completions[]).
    */
-  markTaskComplete: (taskId, contestantId) =>
+  markTaskComplete: (taskId) =>
     set((s) => ({
-      tasks: s.tasks.map((t) => {
-        if (t.id !== taskId) return t;
-        const existing = t.completions?.find((c) => c.contestant_id === contestantId);
-        if (existing) {
-          return {
-            ...t,
-            completions: t.completions.map((c) =>
-              c.contestant_id === contestantId
-                ? { ...c, is_completed: true, completed_at: new Date().toISOString() }
-                : c
-            ),
-          };
-        }
-        return {
-          ...t,
-          completions: [
-            ...(t.completions ?? []),
-            { contestant_id: contestantId, is_completed: true, completed_at: new Date().toISOString() },
-          ],
-        };
-      }),
+      tasks: s.tasks.map((t) =>
+        t.id === taskId
+          ? { ...t, is_completed: true, completed_at: new Date().toISOString() }
+          : t
+      ),
     })),
 
   // ── Equipo (HU-12) ────────────────────────────────────────────────────────

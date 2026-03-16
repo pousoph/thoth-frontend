@@ -46,21 +46,16 @@ const extractUrl = (description) => {
 };
 
 /**
- * Determina si el competidor actual completó esta tarea.
- * Busca en completions[] por contestant_id.
+ * Determina si la tarea está completada.
+ * El backend /tasks/me devuelve is_completed directamente en la tarea.
  */
-const isTaskCompleted = (task, userId) => {
-  if (!task.completions?.length) return false;
-  return task.completions.some(
-    (c) => c.contestant_id === userId && c.is_completed === true
-  );
-};
+const isTaskCompleted = (task) => !!task.is_completed;
 
 // ── TaskCard ──────────────────────────────────────────────────────────────────
 const TaskCard = ({ task, userId, onComplete, index }) => {
   const [busy, setBusy]       = useState(false);
   const [apiError, setApiError] = useState('');
-  const completed = isTaskCompleted(task, userId);
+  const completed = isTaskCompleted(task);
   const deadline  = formatDeadline(task.limit_date);
   const link      = extractUrl(task.description);
 
@@ -147,27 +142,23 @@ const TasksPage = () => {
   // Si no, completions[] se comparará con undefined y todas quedarán "pending".
   const userId = user?.id ?? null;
 
-  const { tasks, tasksLoaded, setTasks, markTaskComplete } = useContestantStore();
-  const [loading,   setLoading]   = useState(!tasksLoaded);
+  const { tasks, setTasks, markTaskComplete } = useContestantStore();
+  const [loading,   setLoading]   = useState(true);
   const [activeTab, setActiveTab] = useState('all');
   const [apiError,  setApiError]  = useState('');
 
   useEffect(() => {
-    if (tasksLoaded) return;
     (async () => {
       setLoading(true);
       const res = await fetchMyTasks();
-      if (res.success) {
-        setTasks(res.data);
-      } else {
-        setApiError(res.message);
-      }
+      if (res.success) setTasks(res.data);
+      else setApiError(res.message);
       setLoading(false);
     })();
   }, []);
 
-  const pending   = tasks.filter((t) => !isTaskCompleted(t, userId));
-  const completed = tasks.filter((t) =>  isTaskCompleted(t, userId));
+  const pending   = tasks.filter((t) => !isTaskCompleted(t));
+  const completed = tasks.filter((t) =>  isTaskCompleted(t));
   const filtered  =
     activeTab === 'pending'   ? pending   :
     activeTab === 'completed' ? completed :
@@ -224,7 +215,7 @@ const TasksPage = () => {
               task={task}
               userId={userId}
               index={i}
-              onComplete={(taskId) => markTaskComplete(taskId, userId)}
+              onComplete={(taskId) => markTaskComplete(taskId)}
             />
           ))}
         </div>

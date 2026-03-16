@@ -40,6 +40,11 @@ const RoleRedirect = () => {
   return <Navigate to="/contestant/dashboard" replace />;
 };
 
+// ── Shared pages ────────────────────────────────────────────────────────
+import LeaguePage              from '@/features/shared/pages/LeaguePage';
+import LevelChangesPage        from '@/features/shared/pages/LevelChangesPage';
+import CodeforcesRankingPage   from '@/features/shared/pages/CodeforcesRankingPage';
+
 // ── Admin module ──────────────────────────────────────────────────────────
 import AdminLayout          from '@/layouts/admin/AdminLayout';
 import AdminDashboardPage   from '@/features/admin/pages/AdminDashboardPage';
@@ -68,6 +73,9 @@ const App = () => (
         <Route path="tasks"       element={<TasksPageContestant />} />
         <Route path="teams"       element={<TeamsPageContestant />} />
         <Route path="metrics"     element={<MetricsPage />} />
+        <Route path="league"      element={<LeaguePage />} />
+        <Route path="ascensos"    element={<LevelChangesPage />} />
+        <Route path="cf-ranking"  element={<CodeforcesRankingPage />} />
         <Route path="profile"     element={<ProfilePage />} />
       </Route>
 
@@ -80,6 +88,9 @@ const App = () => (
         <Route path="dashboard"     element={<AdminDashboardPage />} />
         <Route path="coaches"       element={<AdminCoachQueuePage />} />
         <Route path="contests"      element={<AdminContestsPage />} />
+        <Route path="league"        element={<LeaguePage />} />
+        <Route path="ascensos"      element={<LevelChangesPage />} />
+        <Route path="cf-ranking"    element={<CodeforcesRankingPage />} />
       </Route>
 
       {/* ── Coach routes ── */}
@@ -94,6 +105,9 @@ const App = () => (
         <Route path="competitors"       element={<CoachCompetitors />} />
         <Route path="tasks"             element={<CoachTasks />} />
         <Route path="analytics"         element={<CoachAnalytics />} />
+        <Route path="league"            element={<LeaguePage />} />
+        <Route path="ascensos"          element={<LevelChangesPage />} />
+        <Route path="cf-ranking"        element={<CodeforcesRankingPage />} />
       </Route>
 
       {/* ── Smart redirect post-login (según rol) ── */}

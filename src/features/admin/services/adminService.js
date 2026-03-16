@@ -15,10 +15,25 @@ export const fetchDashboard = async () => {
 // ─────────────────────────────────────────────────────────────────────────────
 // COACH QUEUE — GET /auth/admin/queue/coach
 // ─────────────────────────────────────────────────────────────────────────────
+const pick = (obj, ...keys) => {
+  for (const k of keys) { if (obj[k] !== undefined) return obj[k]; }
+  return undefined;
+};
+
+const normalizeCoachRequest = (c) => ({
+  id:                pick(c, 'id', 'user-id', 'user_id', 'userId') ?? null,
+  name:              c.name ?? '',
+  last_name:         pick(c, 'last_name', 'last-name', 'lastName') ?? '',
+  email:             c.email ?? '',
+  username:          pick(c, 'username', 'user-name', 'userName') ?? '',
+  codeforces_handle: pick(c, 'codeforces_handle', 'codeforces-handle', 'codeforcesHandle') ?? '',
+});
+
 export const fetchPendingCoaches = async () => {
   try {
     const { data } = await apiClient.get('/auth/admin/queue/coach');
-    return { success: true, data };
+    const list = Array.isArray(data) ? data.map(normalizeCoachRequest) : [];
+    return { success: true, data: list };
   } catch (err) {
     return { success: false, message: getApiError(err, 'Error al cargar los coaches pendientes') };
   }
@@ -29,7 +44,7 @@ export const fetchPendingCoaches = async () => {
 // ─────────────────────────────────────────────────────────────────────────────
 export const activateCoach = async (coachId) => {
   try {
-    const { data } = await apiClient.post('/auth/admin/coach/activate', { coach_id: coachId });
+    const { data } = await apiClient.post('/auth/admin/coach/activate', { 'user-id': coachId });
     return { success: true, message: data.message };
   } catch (err) {
     return { success: false, message: getApiError(err, 'Error al activar el coach') };
@@ -41,7 +56,7 @@ export const activateCoach = async (coachId) => {
 // ─────────────────────────────────────────────────────────────────────────────
 export const rejectCoach = async (coachId) => {
   try {
-    const { data } = await apiClient.post('/auth/admin/coach/reject', { coach_id: coachId });
+    const { data } = await apiClient.post('/auth/admin/coach/reject', { 'user-id': coachId });
     return { success: true, message: data.message };
   } catch (err) {
     return { success: false, message: getApiError(err, 'Error al rechazar el coach') };
