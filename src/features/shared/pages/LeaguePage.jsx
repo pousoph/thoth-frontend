@@ -38,7 +38,9 @@ const LeaguePage = () => {
     if (col.key === 'total') return row.total ?? 0;
     // Columna de competencia dinámica
     if (col.contest_id != null) return row.contest_scores?.[String(col.contest_id)] ?? '—';
-    return '—';
+    // Fallback genérico: buscar por key kebab-case o snake_case
+    const snake = col.key.replace(/-/g, '_');
+    return row[col.key] ?? row[snake] ?? '—';
   };
 
   return (

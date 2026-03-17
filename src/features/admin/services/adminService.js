@@ -88,3 +88,26 @@ export const createContestManual = async (payload) => {
     return { success: false, message: getApiError(err, 'Error al crear competencia manualmente') };
   }
 };
+
+// ─────────────────────────────────────────────────────────────────────────────
+// CONTESTANTS — GET /contestants
+// ─────────────────────────────────────────────────────────────────────────────
+const normalizeContestant = (c) => ({
+  id:                c.id,
+  name:              c.name ?? '',
+  last_name:         pick(c, 'last_name', 'last-name', 'lastName') ?? '',
+  username:          pick(c, 'username', 'user-name', 'userName') ?? '',
+  codeforces_handle: pick(c, 'codeforces_handle', 'codeforces-handle', 'codeforcesHandle') ?? '',
+  level:             c.level ?? '',
+});
+
+export const fetchContestants = async ({ q = '' } = {}) => {
+  try {
+    const qs = q ? `?q=${encodeURIComponent(q)}` : '';
+    const { data } = await apiClient.get(`/contestants${qs}`);
+    const list = Array.isArray(data) ? data.map(normalizeContestant) : [];
+    return { success: true, data: list };
+  } catch (err) {
+    return { success: false, message: getApiError(err, 'Error al cargar competidores') };
+  }
+};

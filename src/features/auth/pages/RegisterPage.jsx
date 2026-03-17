@@ -83,6 +83,14 @@ const validate = (v) => {
                                   e.email            = 'Debe ser @unbosque.edu.co';
   if (!v.gender)                  e.gender           = 'Selecciona';
   if (!v.birthDate)               e.birthDate        = 'Requerido';
+  else {
+    const birth = new Date(v.birthDate);
+    const min   = new Date('1970-01-01');
+    const max   = new Date();
+    max.setFullYear(max.getFullYear() - 14);
+    if (birth < min) e.birthDate = 'Fecha no válida';
+    else if (birth > max) e.birthDate = 'Debes tener al menos 14 años';
+  }
   if (!v.size)                    e.size             = 'Selecciona';
   if (!v.codeforcesHandle.trim()) e.codeforcesHandle = 'Requerido';
   if (!v.password)                e.password         = 'Requerido';
@@ -192,7 +200,8 @@ const RegisterPage = () => {
               </SelectField>
               <InputField label="Fecha de nacimiento" name="birthDate" type="date"
                 value={values.birthDate} onChange={handleChange} onBlur={handleBlur}
-                error={errors.birthDate} required icon={<CalendarIcon />} />
+                error={errors.birthDate} required icon={<CalendarIcon />}
+                min="1970-01-01" max={new Date(new Date().setFullYear(new Date().getFullYear() - 14)).toISOString().split('T')[0]} />
             </div>
           </Section>
 

@@ -62,11 +62,18 @@ const IconCF = () => (
 );
 
 // ── Nav items config ───────────────────────────────────────────────────────────
+const IconContestants = () => (
+  <svg className="cl-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/>
+  </svg>
+);
+
 const NAV_ITEMS = [
-  { to: '/admin/dashboard', label: 'Dashboard',    Icon: IconDashboard },
-  { to: '/admin/coaches',   label: 'Coaches',      Icon: IconUsers     },
-  { to: '/admin/contests',  label: 'Competencias', Icon: IconTrophy    },
-  { to: '/admin/league',      label: 'Liga',          Icon: IconLeague   },
+  { to: '/admin/dashboard',   label: 'Dashboard',     Icon: IconDashboard    },
+  { to: '/admin/coaches',     label: 'Coaches',        Icon: IconUsers        },
+  { to: '/admin/contestants', label: 'Competidores',   Icon: IconContestants  },
+  { to: '/admin/contests',   label: 'Competencias',   Icon: IconTrophy       },
+  { to: '/admin/league',       label: 'Liga',           Icon: IconLeague      },
   { to: '/admin/ascensos',    label: 'Ascensos',      Icon: IconAscensos },
   { to: '/admin/cf-ranking',  label: 'Ranking CF',    Icon: IconCF       },
 ];
@@ -75,7 +82,8 @@ const NAV_ITEMS = [
 const PAGE_TITLES = {
   '/admin/dashboard': { title: 'Admin Dashboard', breadcrumb: 'Salud de Plataforma' },
   '/admin/coaches':   { title: 'Gestión de Coaches', breadcrumb: 'Solicitudes pendientes' },
-  '/admin/contests':  { title: 'Competencias', breadcrumb: 'Registrar resultados' },
+  '/admin/contests':     { title: 'Competencias', breadcrumb: 'Registrar resultados' },
+  '/admin/contestants':  { title: 'Competidores', breadcrumb: 'Todos los competidores' },
   '/admin/league':    { title: 'Liga',          breadcrumb: 'Tabla de posiciones' },
   '/admin/ascensos':    { title: 'Ascensos',      breadcrumb: 'Historial de cambios de nivel' },
   '/admin/cf-ranking':  { title: 'Ranking CF',    breadcrumb: 'Ranking de Codeforces' },

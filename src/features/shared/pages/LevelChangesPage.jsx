@@ -85,8 +85,8 @@ const LevelChangesPage = () => {
               }} />
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-text-primary)' }}>
-                  <span style={{ color: 'var(--color-text-muted)', fontSize: 12 }}>
-                    Competidor #{entry.contestant_id}
+                  <span style={{ color: 'var(--color-text-primary)' }}>
+                    {entry.contestant_name}
                   </span>
                   <span style={{ color: 'var(--color-text-muted)', margin: '0 8px', fontWeight: 400 }}>·</span>
                   <span style={{
@@ -112,7 +112,7 @@ const LevelChangesPage = () => {
                   </div>
                 )}
                 <div style={{ fontSize: 11, color: 'var(--color-text-muted)', marginTop: 4 }}>
-                  por Coach #{entry.coach_id ?? '—'}
+                  por {entry.coach_name || '—'}
                 </div>
               </div>
               <div style={{ fontSize: 11, color: 'var(--color-text-muted)', flexShrink: 0 }}>

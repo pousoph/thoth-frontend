@@ -49,7 +49,8 @@ import CodeforcesRankingPage   from '@/features/shared/pages/CodeforcesRankingPa
 import AdminLayout          from '@/layouts/admin/AdminLayout';
 import AdminDashboardPage   from '@/features/admin/pages/AdminDashboardPage';
 import AdminCoachQueuePage  from '@/features/admin/pages/AdminCoachQueuePage';
-import AdminContestsPage    from '@/features/admin/pages/AdminContestsPage';
+import AdminContestsPage      from '@/features/admin/pages/AdminContestsPage';
+import AdminContestantsPage  from '@/features/admin/pages/AdminContestantsPage';
 
 // ── App ───────────────────────────────────────────────────────────────────
 const App = () => (
@@ -88,6 +89,7 @@ const App = () => (
         <Route path="dashboard"     element={<AdminDashboardPage />} />
         <Route path="coaches"       element={<AdminCoachQueuePage />} />
         <Route path="contests"      element={<AdminContestsPage />} />
+        <Route path="contestants"   element={<AdminContestantsPage />} />
         <Route path="league"        element={<LeaguePage />} />
         <Route path="ascensos"      element={<LevelChangesPage />} />
         <Route path="cf-ranking"    element={<CodeforcesRankingPage />} />

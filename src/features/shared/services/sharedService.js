@@ -19,21 +19,26 @@ const normalizeColumn = (c) => ({
 
 const normalizeLeagueRow = (r) => ({
   ...r,
-  team_id:           pick(r, 'team_id', 'team-id', 'teamId'),
-  team_name:         pick(r, 'team_name', 'team-name', 'teamName') ?? '',
-  is_icpc_qualified: !!(pick(r, 'is_icpc_qualified', 'is-icpc-qualified', 'isIcpcQualified')),
-  additional_points: pick(r, 'additional_points', 'additional-points', 'additionalPoints') ?? 0,
-  contest_scores:    pick(r, 'contest_scores', 'contest-scores', 'contestScores') ?? {},
+  team_id:              pick(r, 'team_id', 'team-id', 'teamId'),
+  team_name:            pick(r, 'team_name', 'team-name', 'teamName') ?? '',
+  is_icpc_qualified:    !!(pick(r, 'is_icpc_qualified', 'is-icpc-qualified', 'isIcpcQualified')),
+  additional_points:    pick(r, 'additional_points', 'additional-points', 'additionalPoints') ?? 0,
+  contest_scores:       pick(r, 'contest_scores', 'contest-scores', 'contestScores') ?? {},
+  balloons_virtual:     pick(r, 'balloons_virtual', 'balloons-virtual', 'balloonsVirtual') ?? 0,
+  balloons_presencial:  pick(r, 'balloons_presencial', 'balloons-presencial', 'balloonsPresencial') ?? 0,
+  balloons_icpc:        pick(r, 'balloons_icpc', 'balloons-icpc', 'balloonsIcpc') ?? 0,
+  balloons_interna:     pick(r, 'balloons_interna', 'balloons-interna', 'balloonsInterna') ?? 0,
+  balloon_points:       pick(r, 'balloon_points', 'balloon-points', 'balloonPoints') ?? 0,
 });
 
 const normalizeLevelChange = (e) => ({
-  id:             e.id ?? null,
-  coach_id:       pick(e, 'coach_id', 'coach-id', 'coachId') ?? null,
-  contestant_id:  pick(e, 'contestant_id', 'contestant-id', 'contestantId') ?? null,
-  old_level:      pick(e, 'old_level', 'old-level', 'oldLevel') ?? '',
-  new_level:      pick(e, 'new_level', 'new-level', 'newLevel') ?? '',
-  reasons:        e.reasons ?? '',
-  created_at:     pick(e, 'created_at', 'created-at', 'createdAt') ?? '',
+  id:              e.id ?? null,
+  coach_name:      pick(e, 'coach_name', 'coach-name', 'coachName') ?? '',
+  contestant_name: pick(e, 'contestant_name', 'contestant-name', 'contestantName') ?? '',
+  old_level:       pick(e, 'old_level', 'old-level', 'oldLevel') ?? '',
+  new_level:       pick(e, 'new_level', 'new-level', 'newLevel') ?? '',
+  reasons:         e.reasons ?? '',
+  created_at:      pick(e, 'created_at', 'created-at', 'createdAt') ?? '',
 });
 
 // GET /league
