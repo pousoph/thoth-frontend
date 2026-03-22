@@ -10,7 +10,7 @@ export const LEVELS = [
 
 export const getLevelColor = (level) => {
   const map = {
-    aprendiz: '#f97316', aprendiz: '#f97316',
+    aprendiz: '#f97316', Aprendiz: '#f97316',
     basica: '#3b82f6', básica: '#3b82f6', Basica: '#3b82f6', Básica: '#3b82f6',
     intermedia: '#a855f7', Intermedia: '#a855f7',
     avanzada: '#ef4444', Avanzada: '#ef4444',

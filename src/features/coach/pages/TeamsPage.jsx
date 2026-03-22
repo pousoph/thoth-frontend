@@ -147,10 +147,12 @@ const EditTeamModal = ({ team, members = [], onClose, onSaved }) => {
   const [isActive,  setIsActive]  = useState(team.is_active);
   const [query,     setQuery]     = useState('');
   const [results,   setResults]   = useState([]);
-  const [selected,  setSelected]  = useState([]);
+  // Pre-cargar miembros actuales (con id) + nuevos agregados
+  const [selected,  setSelected]  = useState(() => members.filter((m) => m.id != null));
   const [searching, setSearching] = useState(false);
   const [saving,    setSaving]    = useState(false);
   const [error,     setError]     = useState('');
+  const [membersChanged, setMembersChanged] = useState(false);
 
   // Búsqueda debounced
   useEffect(() => {
@@ -164,12 +166,17 @@ const EditTeamModal = ({ team, members = [], onClose, onSaved }) => {
     return () => clearTimeout(timer);
   }, [query]);
 
-  const toggleSelect = (contestant) => {
+  const removeMember = (id) => {
+    setSelected((prev) => prev.filter((c) => c.id !== id));
+    setMembersChanged(true);
+  };
+
+  const addMember = (contestant) => {
     setSelected((prev) => {
-      const exists = prev.find((c) => c.id === contestant.id);
-      if (exists) return prev.filter((c) => c.id !== contestant.id);
+      if (prev.some((c) => c.id === contestant.id)) return prev;
       if (prev.length >= 3) { setError('Máximo 3 competidores por equipo.'); return prev; }
       setError('');
+      setMembersChanged(true);
       return [...prev, contestant];
     });
   };
@@ -181,7 +188,7 @@ const EditTeamModal = ({ team, members = [], onClose, onSaved }) => {
       patch.name = name.trim();
     }
     if (isActive !== team.is_active) patch.isActive = isActive;
-    if (selected.length > 0) patch.contestantIds = selected.map((c) => c.id);
+    if (membersChanged) patch.contestantIds = selected.map((c) => c.id);
 
     if (Object.keys(patch).length === 0) { onClose(); return; }
 
@@ -228,11 +235,11 @@ const EditTeamModal = ({ team, members = [], onClose, onSaved }) => {
         </button>
       </Field>
 
-      {members.length > 0 && (
-        <Field label="Miembros actuales">
+      <Field label={`Miembros (${selected.length}/3)`}>
+        {selected.length > 0 ? (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-            {members.map((m, i) => (
-              <div key={i} style={{
+            {selected.map((m) => (
+              <div key={m.id} style={{
                 display: 'flex', alignItems: 'center', gap: 8,
                 padding: '6px 10px', borderRadius: 8,
                 background: 'var(--color-surface-3)', border: '1px solid var(--color-border)',
@@ -242,78 +249,77 @@ const EditTeamModal = ({ team, members = [], onClose, onSaved }) => {
                 </span>
                 <LevelBadge level={m.level} />
                 {m.codeforces_handle && (
-                  <span style={{ fontSize: 11, color: 'var(--color-text-muted)', marginLeft: 'auto' }}>
+                  <span style={{ fontSize: 11, color: 'var(--color-text-muted)' }}>
                     CF: {m.codeforces_handle}
                   </span>
                 )}
-              </div>
-            ))}
-          </div>
-        </Field>
-      )}
-
-      <Field
-        label="Reemplazar miembros (opcional)"
-        hint="Si seleccionas competidores aquí, reemplazarán a los miembros actuales. Deja vacío para no cambiar."
-      >
-        <div className="co-search-input-wrap">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-          </svg>
-          <input
-            className="co-search-input"
-            placeholder="Buscar competidores disponibles…"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-          />
-        </div>
-
-        {(results.length > 0 || searching) && (
-          <div className="co-search-results">
-            {searching ? (
-              <div style={{ padding: '12px 14px', fontSize: 12, color: 'var(--color-text-muted)' }}>
-                Buscando…
-              </div>
-            ) : results.map((c) => {
-              const isSelected = selected.some((s) => s.id === c.id);
-              return (
-                <div
-                  key={c.id}
-                  className={`co-search-result-item${isSelected ? ' co-search-result-item--selected' : ''}`}
-                  onClick={() => toggleSelect(c)}
-                >
-                  <div>
-                    <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--color-text-primary)' }}>
-                      {c.name} {c.last_name}
-                    </div>
-                    <div style={{ fontSize: 11, color: 'var(--color-text-muted)' }}>
-                      @{c.username}{c.codeforces_handle ? ` · CF: ${c.codeforces_handle}` : ''}
-                    </div>
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <LevelBadge level={c.level} />
-                    {isSelected && <span style={{ fontSize: 13, color: 'var(--co-light)' }}>✓</span>}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        )}
-
-        {selected.length > 0 && (
-          <div className="co-selected-members">
-            {selected.map((c) => (
-              <span key={c.id} className="co-selected-chip">
-                {c.name} {c.last_name}
                 <button
-                  className="co-selected-chip__remove"
-                  onClick={() => setSelected((p) => p.filter((s) => s.id !== c.id))}
+                  onClick={() => removeMember(m.id)}
+                  style={{
+                    marginLeft: 'auto', background: 'none', border: 'none',
+                    color: 'var(--color-error, #e05c6a)', cursor: 'pointer',
+                    fontSize: 14, padding: '0 4px', flexShrink: 0,
+                  }}
+                  title="Quitar del equipo"
                 >✕</button>
-              </span>
+              </div>
             ))}
+          </div>
+        ) : (
+          <div style={{ fontSize: 12, color: 'var(--color-text-muted)', padding: '8px 0' }}>
+            Sin miembros — busca competidores para agregar.
           </div>
         )}
       </Field>
+
+      {selected.length < 3 && (
+        <Field label="Agregar miembros" hint="Busca competidores disponibles para agregar al equipo.">
+          <div className="co-search-input-wrap">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+            <input
+              className="co-search-input"
+              placeholder="Buscar competidores disponibles…"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+            />
+          </div>
+
+          {(results.length > 0 || searching) && (
+            <div className="co-search-results">
+              {searching ? (
+                <div style={{ padding: '12px 14px', fontSize: 12, color: 'var(--color-text-muted)' }}>
+                  Buscando…
+                </div>
+              ) : results.map((c) => {
+                const alreadyIn = selected.some((s) => s.id === c.id);
+                return (
+                  <div
+                    key={c.id}
+                    className={`co-search-result-item${alreadyIn ? ' co-search-result-item--selected' : ''}`}
+                    onClick={() => !alreadyIn && addMember(c)}
+                    style={alreadyIn ? { opacity: 0.5, cursor: 'default' } : {}}
+                  >
+                    <div>
+                      <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--color-text-primary)' }}>
+                        {c.name} {c.last_name}
+                      </div>
+                      <div style={{ fontSize: 11, color: 'var(--color-text-muted)' }}>
+                        @{c.username}{c.codeforces_handle ? ` · CF: ${c.codeforces_handle}` : ''}
+                      </div>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <LevelBadge level={c.level} />
+                      {alreadyIn && <span style={{ fontSize: 11, color: 'var(--color-text-muted)' }}>Ya en el equipo</span>}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </Field>
+      )}
     </Modal>
   );
 };
