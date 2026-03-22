@@ -48,6 +48,34 @@ export const fetchCoachDashboard = async () => {
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
+// GET /teams/my-teams  —  Equipos del coach con miembros
+// Respuesta: [{ team-id, team-name, is-active, members: [{ name, last-name, level, codeforces-handle }] }]
+// ─────────────────────────────────────────────────────────────────────────────
+const normalizeMember = (m) => ({
+  name:              m.name ?? '',
+  last_name:         m.last_name         ?? m['last-name']         ?? m.lastName  ?? '',
+  level:             m.level             ?? '',
+  codeforces_handle: m.codeforces_handle ?? m['codeforces-handle'] ?? m.codeforcesHandle ?? '',
+});
+
+const normalizeMyTeam = (t) => ({
+  team_id:   t.team_id   ?? t['team-id']   ?? t.teamId,
+  team_name: t.team_name ?? t['team-name'] ?? t.teamName ?? '',
+  is_active: t.is_active ?? t['is-active'] ?? t.isActive ?? true,
+  members:   Array.isArray(t.members) ? t.members.map(normalizeMember) : [],
+});
+
+export const fetchMyTeams = async () => {
+  try {
+    const { data } = await apiClient.get('/teams/my-teams');
+    const list = Array.isArray(data) ? data.map(normalizeMyTeam) : [];
+    return { success: true, data: list };
+  } catch (err) {
+    return { success: false, message: getApiError(err, 'Error al cargar equipos') };
+  }
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
 // GET /contestants  —  HU-06
 // Parámetros opcionales: q, level, gender, is_available
 // Acepta query vacía a diferencia de available-contestants
@@ -98,6 +126,23 @@ export const createTeam = async (name, contestantIds) => {
     return { success: true, message: data.message };
   } catch (err) {
     return { success: false, message: getApiError(err, 'Error al crear el equipo') };
+  }
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// PUT /teams/:id  —  Editar equipo (campos opcionales)
+// Body (todos opcionales): { name, "contestant-ids": number[], "is-active": bool }
+// ─────────────────────────────────────────────────────────────────────────────
+export const updateTeam = async (teamId, { name, contestantIds, isActive } = {}) => {
+  try {
+    const body = {};
+    if (name !== undefined)          body.name              = name;
+    if (contestantIds !== undefined)  body['contestant-ids'] = contestantIds;
+    if (isActive !== undefined)       body['is-active']      = isActive;
+    const { data } = await apiClient.put(`/teams/${teamId}`, body);
+    return { success: true, message: data.message ?? 'Equipo actualizado' };
+  } catch (err) {
+    return { success: false, message: getApiError(err, 'Error al actualizar el equipo') };
   }
 };
 

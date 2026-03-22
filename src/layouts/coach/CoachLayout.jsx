@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useCallback } from 'react';
 import { Outlet, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import useAuthStore from '@/store/authStore';
 import useCoachStore from '@/store/coachStore';
@@ -98,11 +98,17 @@ const PAGE_TITLES = {
 };
 
 // ── Sidebar ────────────────────────────────────────────────────────────────────
-const Sidebar = ({ user, onLogout }) => {
+const IconMenu = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+    <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+  </svg>
+);
+
+const Sidebar = ({ user, onLogout, open, onNavClick }) => {
   const initials = user?.username?.[0]?.toUpperCase() ?? 'C';
 
   return (
-    <aside className="co-sidebar">
+    <aside className={`co-sidebar${open ? ' co-sidebar--open' : ''}`}>
       <div className="co-sidebar__grid" />
       <div className="co-sidebar__glow" />
 
@@ -130,6 +136,7 @@ const Sidebar = ({ user, onLogout }) => {
             className={({ isActive }) =>
               `co-nav__item${isActive ? ' co-nav__item--active' : ''}`
             }
+            onClick={onNavClick}
           >
             <Icon />
             {label}
@@ -149,13 +156,16 @@ const Sidebar = ({ user, onLogout }) => {
 };
 
 // ── Topbar ─────────────────────────────────────────────────────────────────────
-const Topbar = ({ pathname }) => {
+const Topbar = ({ pathname, onToggleSidebar }) => {
   // Match exact or prefix (for /coach/teams/:id)
   const key = Object.keys(PAGE_TITLES).find((k) => pathname.startsWith(k)) ?? '';
   const info = PAGE_TITLES[key] ?? { title: 'THOTH', breadcrumb: '' };
 
   return (
     <header className="co-topbar">
+      <button className="co-topbar__hamburger" onClick={onToggleSidebar} aria-label="Abrir menú">
+        <IconMenu />
+      </button>
       <div className="co-topbar__left">
         <div className="co-topbar__title">{info.title}</div>
         {info.breadcrumb && (
@@ -178,6 +188,9 @@ const CoachLayout = () => {
   const user        = useAuthStore((s) => s.user);
   const clearAuth   = useAuthStore((s) => s.clearAuth);
   const resetCoach  = useCoachStore((s) => s.resetCoach);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  const closeSidebar = useCallback(() => setSidebarOpen(false), []);
 
   const handleLogout = () => {
     resetCoach();
@@ -187,9 +200,10 @@ const CoachLayout = () => {
 
   return (
     <div className="co-layout">
-      <Sidebar user={user} onLogout={handleLogout} />
+      <div className={`co-backdrop${sidebarOpen ? ' co-backdrop--open' : ''}`} onClick={closeSidebar} />
+      <Sidebar user={user} onLogout={handleLogout} open={sidebarOpen} onNavClick={closeSidebar} />
       <div className="co-main">
-        <Topbar pathname={location.pathname} />
+        <Topbar pathname={location.pathname} onToggleSidebar={() => setSidebarOpen((v) => !v)} />
         <main className="co-content">
           <Outlet />
         </main>

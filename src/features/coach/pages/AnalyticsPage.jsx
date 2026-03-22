@@ -161,7 +161,7 @@ const AnalyticsPage = () => {
                 <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" vertical={false} />
                 <XAxis dataKey="name" tick={{ fill: 'var(--color-text-muted)', fontSize: 10 }} axisLine={false} tickLine={false} />
                 <YAxis tick={{ fill: 'var(--color-text-muted)', fontSize: 11 }} axisLine={false} tickLine={false} domain={[0,100]} />
-                <Tooltip content={<CT />} formatter={(v) => `${v}%`} />
+                <Tooltip content={<CT />} cursor={{ fill: 'rgba(255,255,255,0.04)' }} formatter={(v) => `${v}%`} />
                 <Bar dataKey="pct" name="Cumplimiento" fill="var(--co-primary)" radius={[4,4,0,0]} />
               </BarChart>
             </ResponsiveContainer>
@@ -180,7 +180,7 @@ const AnalyticsPage = () => {
                   <Cell fill="var(--co-primary)" />
                   <Cell fill="var(--color-surface-4)" />
                 </Pie>
-                <Tooltip content={<CT />} />
+                <Tooltip content={<CT />} cursor={{ fill: 'rgba(255,255,255,0.04)' }} />
                 <Legend formatter={LEG} />
               </PieChart>
             </ResponsiveContainer>
@@ -197,7 +197,7 @@ const AnalyticsPage = () => {
                 <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" vertical={false} />
                 <XAxis dataKey="name" tick={{ fill: 'var(--color-text-muted)', fontSize: 10 }} axisLine={false} tickLine={false} />
                 <YAxis tick={{ fill: 'var(--color-text-muted)', fontSize: 11 }} axisLine={false} tickLine={false} />
-                <Tooltip content={<CT />} />
+                <Tooltip content={<CT />} cursor={{ fill: 'rgba(255,255,255,0.04)' }} />
                 <Legend formatter={LEG} />
                 <Bar dataKey="coach" name="Tu promedio"  fill="var(--co-primary)"      radius={[4,4,0,0]} />
                 <Bar dataKey="uni"   name="Prom. UEB"    fill="var(--color-surface-4)" radius={[4,4,0,0]} />

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { Outlet, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import useAuthStore from '@/store/authStore';
 import { LevelBadge } from '@/features/contestant/components/SharedComponents';
@@ -97,14 +97,20 @@ const PAGE_TITLES = {
   '/contestant/profile':    { title: 'Mi Perfil',     breadcrumb: 'Información personal' },
 };
 
+const IconMenu = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+    <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+  </svg>
+);
+
 // ── Sidebar ───────────────────────────────────────────────────────────────────
-const Sidebar = ({ user, onLogout }) => {
+const Sidebar = ({ user, onLogout, open, onNavClick }) => {
   const initials = user
     ? `${user.username?.[0] ?? ''}`.toUpperCase()
     : '?';
 
   return (
-    <aside className="cl-sidebar">
+    <aside className={`cl-sidebar${open ? ' cl-sidebar--open' : ''}`}>
       <div className="cl-sidebar__grid" />
       <div className="cl-sidebar__glow" />
 
@@ -129,6 +135,7 @@ const Sidebar = ({ user, onLogout }) => {
             className={({ isActive }) =>
               `cl-nav__item${isActive ? ' cl-nav__item--active' : ''}`
             }
+            onClick={onNavClick}
           >
             <Icon />
             {label}
@@ -148,11 +155,14 @@ const Sidebar = ({ user, onLogout }) => {
 };
 
 // ── Topbar ────────────────────────────────────────────────────────────────────
-const Topbar = ({ pathname }) => {
+const Topbar = ({ pathname, onToggleSidebar }) => {
   const info = PAGE_TITLES[pathname] ?? { title: 'THOTH', breadcrumb: '' };
 
   return (
     <header className="cl-topbar">
+      <button className="cl-topbar__hamburger" onClick={onToggleSidebar} aria-label="Abrir menú">
+        <IconMenu />
+      </button>
       <div className="cl-topbar__left">
         <div className="cl-topbar__title">{info.title}</div>
         {info.breadcrumb && (
@@ -174,6 +184,9 @@ const CompetitorLayout = () => {
   const location  = useLocation();
   const user      = useAuthStore((s) => s.user);
   const clearAuth = useAuthStore((s) => s.clearAuth);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  const closeSidebar = useCallback(() => setSidebarOpen(false), []);
 
   // Aplicar data-level al root para el sistema de tematización
   useEffect(() => {
@@ -189,10 +202,11 @@ const CompetitorLayout = () => {
 
   return (
     <div className="cl-layout">
-      <Sidebar user={user} onLogout={handleLogout} />
+      <div className={`cl-backdrop${sidebarOpen ? ' cl-backdrop--open' : ''}`} onClick={closeSidebar} />
+      <Sidebar user={user} onLogout={handleLogout} open={sidebarOpen} onNavClick={closeSidebar} />
 
       <div className="cl-main">
-        <Topbar pathname={location.pathname} />
+        <Topbar pathname={location.pathname} onToggleSidebar={() => setSidebarOpen((v) => !v)} />
         <main className="cl-content">
           <Outlet />
         </main>
