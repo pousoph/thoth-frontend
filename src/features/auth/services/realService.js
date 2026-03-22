@@ -154,6 +154,26 @@ export const forgotPassword = async (email) => {
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
+// POST /auth/reset-password
+// Body: { email, code, "new-password" }
+// ─────────────────────────────────────────────────────────────────────────────
+export const resetPassword = async (email, code, newPassword) => {
+  try {
+    await api.post('/auth/reset-password', {
+      email,
+      code,
+      'new-password': newPassword,
+    });
+    return { success: true };
+  } catch (err) {
+    const status = err?.response?.status;
+    if (status === 400) return { success: false, message: 'Código incorrecto. Intenta de nuevo.' };
+    if (status === 410) return { success: false, message: 'El código expiró. Solicita uno nuevo.' };
+    return { success: false, message: getError(err) };
+  }
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
 // POST /auth/logout
 // ─────────────────────────────────────────────────────────────────────────────
 export const logout = async () => {
