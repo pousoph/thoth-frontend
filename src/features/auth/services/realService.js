@@ -33,11 +33,26 @@ api.interceptors.response.use(
   }
 );
 
-const getError = (err, fallback = 'Ocurrió un error inesperado') =>
-  err?.response?.data?.message ??
-  err?.response?.data?.error ??
-  err?.message ??
-  fallback;
+const STATUS_MSG = {
+  403: 'No tienes permisos para realizar esta acción.',
+  408: 'La solicitud tardó demasiado. Intenta de nuevo.',
+  429: 'Demasiadas solicitudes. Espera un momento.',
+  500: 'Error interno del servidor. Intenta más tarde.',
+  502: 'El servidor no está disponible. Intenta más tarde.',
+  503: 'Servicio en mantenimiento. Intenta más tarde.',
+};
+
+const getError = (err, fallback = 'Ocurrió un error inesperado') => {
+  const status = err?.response?.status;
+  const msg    = err?.response?.data?.message ?? err?.response?.data?.error;
+
+  if (msg && [400, 404, 409, 422].includes(status)) return msg;
+  if (status && STATUS_MSG[status]) return STATUS_MSG[status];
+  if (err?.code === 'ECONNABORTED') return 'La conexión tardó demasiado. Verifica tu internet.';
+  if (err?.code === 'ERR_NETWORK')  return 'No se pudo conectar al servidor. Verifica tu internet.';
+
+  return fallback;
+};
 
 // ─────────────────────────────────────────────────────────────────────────────
 // POST /auth/login
