@@ -6,7 +6,7 @@
   <script>
     // GitHub Pages SPA redirect hack
     // Converts the path into a query string so index.html can restore it
-    var pathSegmentsToKeep = 1; // repo is served under /thoth-frontend/
+    var pathSegmentsToKeep = 0; // custom domain — app is at root
     var l = window.location;
     l.replace(
       l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') +
