@@ -2,11 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import useCoachStore from '@/store/coachStore';
 import {
-  fetchCoachDashboard, fetchTeamTasks,
+  fetchCoachDashboard, fetchMyTeams, fetchTeamTasks,
   createTask, updateTask, deleteTask, undoTaskCompletion,
 } from '../services/coachService';
 import {
-  SectionHeader, EmptyState, StatusBadge, ProgressBar,
+  SectionHeader, EmptyState, StatusBadge, LevelBadge, ProgressBar,
   Modal, Field, Alert, isoToBackendDate, deadlineStatus,
   completionRate, Sk, SkList,
 } from '../components/SharedComponents';
@@ -153,6 +153,7 @@ const TeamDetailPage = () => {
   const navigate   = useNavigate();
   const {
     dashboardData, setDashboardData,
+    myTeams, setMyTeams,
     tasksByTeam, setTasksForTeam, removeTask,
   } = useCoachStore();
 
@@ -163,14 +164,16 @@ const TeamDetailPage = () => {
   const [taskModal,    setTaskModal]    = useState(null); // null | 'create' | task
   const [delConfirm,   setDelConfirm]   = useState(null);
 
-  const numId = Number(teamId);
-  const team  = dashboardData?.teams?.find((t) => t.team_id === numId);
+  const numId   = Number(teamId);
+  const team    = dashboardData?.teams?.find((t) => t.team_id === numId);
+  const members = myTeams?.find((t) => t.team_id === numId)?.members ?? [];
 
   // Siempre carga fresh para tener los datos del equipo actualizados
   useEffect(() => {
-    fetchCoachDashboard().then((res) => {
-      if (res.success) setDashboardData(res.data);
-      else setError(res.message);
+    Promise.all([fetchCoachDashboard(), fetchMyTeams()]).then(([dashRes, teamsRes]) => {
+      if (dashRes.success) setDashboardData(dashRes.data);
+      else setError(dashRes.message);
+      if (teamsRes.success) setMyTeams(teamsRes.data);
       setLoading(false);
     });
   }, []);
@@ -275,6 +278,36 @@ const TeamDetailPage = () => {
             </div>
             <ProgressBar value={team.task_completion_rate ?? 0} max={1} />
           </div>
+
+          {members.length > 0 && (
+            <div style={{ marginTop: 16 }}>
+              <div style={{
+                fontSize: 11, fontWeight: 600, color: 'var(--color-text-muted)',
+                textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 8,
+              }}>
+                Miembros
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                {members.map((m, i) => (
+                  <div key={i} style={{
+                    display: 'flex', alignItems: 'center', gap: 8,
+                    padding: '8px 10px', borderRadius: 8,
+                    background: 'var(--color-surface-3)', border: '1px solid var(--color-border)',
+                  }}>
+                    <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--color-text-primary)' }}>
+                      {m.name} {m.last_name}
+                    </span>
+                    <LevelBadge level={m.level} />
+                    {m.codeforces_handle && (
+                      <span style={{ fontSize: 11, color: 'var(--color-text-muted)', marginLeft: 'auto' }}>
+                        CF: {m.codeforces_handle}
+                      </span>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* ── Columna derecha — tareas ── */}

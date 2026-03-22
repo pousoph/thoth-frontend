@@ -30,6 +30,11 @@ const useCoachStore = create((set, get) => ({
   dashboardLoaded:     false,
   setDashboardData:    (d) => set({ dashboardData: d, dashboardLoaded: true }),
 
+  // ── My Teams (con miembros) ───────────────────────────────────────────────
+  // [{ team_id, team_name, is_active, members: [{ name, last_name, level, codeforces_handle }] }]
+  myTeams:       null,
+  setMyTeams:    (list) => set({ myTeams: list }),
+
   // ── Available contestants para búsqueda (crear equipo) ────────────────────
   // [{ id, name, last_name, username, codeforces_handle, level }]
   availableContestants: [],
@@ -83,6 +88,7 @@ const useCoachStore = create((set, get) => ({
   resetCoach: () =>
     set({
       dashboardData: null, dashboardLoaded: false,
+      myTeams: null,
       availableContestants: [],
       tasksByTeam: {},
       levelChanges: [], levelChangesLoaded: false, levelChangesPage: 1, levelChangesTotal: 0,

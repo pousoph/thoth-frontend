@@ -127,7 +127,7 @@ const DashboardPage = () => {
                 <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" vertical={false} />
                 <XAxis dataKey="name" tick={{ fill: 'var(--color-text-muted)', fontSize: 10 }} axisLine={false} tickLine={false} />
                 <YAxis tick={{ fill: 'var(--color-text-muted)', fontSize: 11 }} axisLine={false} tickLine={false} />
-                <Tooltip content={<CT />} />
+                <Tooltip content={<CT />} cursor={{ fill: 'rgba(255,255,255,0.04)' }} />
                 <Bar dataKey="puntaje" name="Puntaje" fill="var(--co-primary)" radius={[4,4,0,0]} opacity={0.85} />
               </BarChart>
             </ResponsiveContainer>
@@ -139,7 +139,7 @@ const DashboardPage = () => {
                 <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" vertical={false} />
                 <XAxis dataKey="name" tick={{ fill: 'var(--color-text-muted)', fontSize: 10 }} axisLine={false} tickLine={false} />
                 <YAxis tick={{ fill: 'var(--color-text-muted)', fontSize: 11 }} axisLine={false} tickLine={false} domain={[0,100]} />
-                <Tooltip content={<CT />} formatter={(v) => `${v}%`} />
+                <Tooltip content={<CT />} cursor={{ fill: 'rgba(255,255,255,0.04)' }} formatter={(v) => `${v}%`} />
                 <Bar dataKey="tareas" name="Cumplimiento" fill="#4ade80" radius={[4,4,0,0]} opacity={0.85} />
               </BarChart>
             </ResponsiveContainer>
@@ -152,7 +152,7 @@ const DashboardPage = () => {
                   <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" vertical={false} />
                   <XAxis dataKey="name" tick={{ fill: 'var(--color-text-muted)', fontSize: 10 }} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fill: 'var(--color-text-muted)', fontSize: 11 }} axisLine={false} tickLine={false} />
-                  <Tooltip content={<CT />} />
+                  <Tooltip content={<CT />} cursor={{ fill: 'rgba(255,255,255,0.04)' }} />
                   <Legend formatter={(v) => <span style={{ color: 'var(--color-text-secondary)', fontSize: 11 }}>{v}</span>} />
                   <Bar dataKey="coach" name="Tu promedio" fill="var(--co-primary)"      radius={[4,4,0,0]} />
                   <Bar dataKey="uni"   name="Prom. UEB"   fill="var(--color-surface-4)" radius={[4,4,0,0]} />
