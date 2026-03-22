@@ -52,6 +52,7 @@ export const fetchCoachDashboard = async () => {
 // Respuesta: [{ team-id, team-name, is-active, members: [{ name, last-name, level, codeforces-handle }] }]
 // ─────────────────────────────────────────────────────────────────────────────
 const normalizeMember = (m) => ({
+  id:                m.id ?? m.contestant_id ?? m['contestant-id'] ?? m.contestantId ?? null,
   name:              m.name ?? '',
   last_name:         m.last_name         ?? m['last-name']         ?? m.lastName  ?? '',
   level:             m.level             ?? '',
