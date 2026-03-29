@@ -74,15 +74,22 @@ const IconCF = () => (
   </svg>
 );
 
+const IconContests = () => (
+  <svg className="cl-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="8" r="6"/><path d="M12 14v8"/><path d="M9 18h6"/>
+  </svg>
+);
+
 const NAV_ITEMS = [
-  { to: '/contestant/dashboard', label: 'Dashboard',  Icon: IconDashboard },
-  { to: '/contestant/tasks',     label: 'Mis Tareas', Icon: IconTasks      },
-  { to: '/contestant/teams',     label: 'Mis Equipos',Icon: IconTeams      },
-  { to: '/contestant/metrics',   label: 'Métricas',   Icon: IconMetrics    },
-  { to: '/contestant/league',    label: 'Liga',        Icon: IconLeague    },
-  { to: '/contestant/ascensos',    label: 'Ascensos',          Icon: IconAscensos  },
-  { to: '/contestant/cf-ranking', label: 'Ranking CF',        Icon: IconCF        },
-  { to: '/contestant/profile',    label: 'Perfil',            Icon: IconProfile   },
+  { to: '/contestant/dashboard',    label: 'Dashboard',    Icon: IconDashboard },
+  { to: '/contestant/tasks',        label: 'Mis Tareas',   Icon: IconTasks      },
+  { to: '/contestant/teams',        label: 'Mis Equipos',  Icon: IconTeams      },
+  { to: '/contestant/metrics',      label: 'Métricas',     Icon: IconMetrics    },
+  { to: '/contestant/league',       label: 'Liga',          Icon: IconLeague    },
+  { to: '/contestant/competencias', label: 'Competencias',  Icon: IconContests  },
+  { to: '/contestant/ascensos',     label: 'Ascensos',      Icon: IconAscensos  },
+  { to: '/contestant/cf-ranking',   label: 'Ranking CF',    Icon: IconCF        },
+  { to: '/contestant/profile',      label: 'Perfil',        Icon: IconProfile   },
 ];
 
 // ── Page title map ─────────────────────────────────────────────────────────────
@@ -91,8 +98,9 @@ const PAGE_TITLES = {
   '/contestant/tasks':     { title: 'Mis Tareas',   breadcrumb: 'Tareas asignadas por el coach' },
   '/contestant/teams':     { title: 'Mis Equipos',  breadcrumb: 'Historial de equipos' },
   '/contestant/metrics':   { title: 'Métricas',     breadcrumb: 'Tu rendimiento competitivo' },
-  '/contestant/league':    { title: 'Liga',          breadcrumb: 'Tabla de posiciones' },
-  '/contestant/ascensos':    { title: 'Ascensos',      breadcrumb: 'Historial de cambios de nivel' },
+  '/contestant/league':        { title: 'Liga',          breadcrumb: 'Tabla de posiciones' },
+  '/contestant/competencias': { title: 'Competencias',  breadcrumb: 'Resultados por competencia' },
+  '/contestant/ascensos':     { title: 'Ascensos',      breadcrumb: 'Historial de cambios de nivel' },
   '/contestant/cf-ranking': { title: 'Ranking CF',    breadcrumb: 'Ranking de Codeforces' },
   '/contestant/profile':    { title: 'Mi Perfil',     breadcrumb: 'Información personal' },
 };

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { fetchLeague } from '../services/sharedService';
 
 const TYPE_COLORS = {
@@ -6,11 +6,21 @@ const TYPE_COLORS = {
   presencial: { bg: 'rgba(34,197,94,0.12)',  color: '#4ade80', border: 'rgba(34,197,94,0.25)'  },
 };
 
+const HIDDEN_COLUMNS = new Set([
+  'balloons-virtual',
+  'balloons-presencial',
+  'balloons-icpc',
+  'balloons-interna',
+]);
+
 const LeaguePage = () => {
-  const [columns, setColumns] = useState([]);
-  const [rows, setRows]       = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError]     = useState('');
+  const [columns, setColumns]           = useState([]);
+  const [rows, setRows]                 = useState([]);
+  const [loading, setLoading]           = useState(true);
+  const [error, setError]               = useState('');
+  const [hoveredTeamId, setHoveredTeamId] = useState(null);
+  const [sortKey, setSortKey]           = useState(null);
+  const [sortDir, setSortDir]           = useState(null);
 
   useEffect(() => {
     (async () => {
@@ -29,6 +39,9 @@ const LeaguePage = () => {
   // Separar columnas de competencia de las fijas
   const contestCols = columns.filter((c) => c.contest_id != null);
 
+  // Columnas visibles (ocultar desglose de globos)
+  const visibleColumns = columns.filter((c) => !HIDDEN_COLUMNS.has(c.key));
+
   // Obtener el valor de una celda según la columna
   const getCellValue = (row, col) => {
     if (col.key === 'rank') return row.rank;
@@ -42,6 +55,37 @@ const LeaguePage = () => {
     const snake = col.key.replace(/-/g, '_');
     return row[col.key] ?? row[snake] ?? '—';
   };
+
+  // Ordenamiento
+  const SORTABLE_FIXED = new Set(['rank', 'total']);
+  const isSortable = (col) => col.contest_id != null || SORTABLE_FIXED.has(col.key);
+
+  const handleSort = (colKey) => {
+    if (sortKey !== colKey) { setSortKey(colKey); setSortDir('desc'); }
+    else if (sortDir === 'desc') { setSortDir('asc'); }
+    else { setSortKey(null); setSortDir(null); }
+  };
+
+  const sortedRows = useMemo(() => {
+    if (!sortKey || !sortDir) return rows;
+    const col = columns.find((c) => c.key === sortKey);
+    if (!col) return rows;
+
+    return [...rows].sort((a, b) => {
+      const va = getCellValue(a, col);
+      const vb = getCellValue(b, col);
+      if (va === '—' && vb === '—') return 0;
+      if (va === '—') return 1;
+      if (vb === '—') return -1;
+
+      const na = typeof va === 'number' ? va : parseFloat(va);
+      const nb = typeof vb === 'number' ? vb : parseFloat(vb);
+      if (!isNaN(na) && !isNaN(nb)) return sortDir === 'asc' ? na - nb : nb - na;
+
+      const cmp = String(va).toLowerCase().localeCompare(String(vb).toLowerCase());
+      return sortDir === 'asc' ? cmp : -cmp;
+    });
+  }, [rows, sortKey, sortDir, columns]);
 
   return (
     <div>
@@ -105,31 +149,44 @@ const LeaguePage = () => {
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
               <thead>
                 <tr>
-                  {columns.map((col) => {
+                  {visibleColumns.map((col) => {
                     const isContest = col.contest_id != null;
                     const colors = TYPE_COLORS[col.type];
+                    const isSorted = sortKey === col.key;
                     return (
-                      <th key={col.key} style={{
-                        padding: '12px 14px', textAlign: col.key === 'rank' ? 'center' : 'left',
-                        color: isContest && colors ? colors.color : 'var(--color-text-muted)',
-                        fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em',
-                        borderBottom: '1px solid var(--color-border)',
-                        fontWeight: 600, background: 'var(--color-surface-3)',
-                        whiteSpace: 'nowrap',
-                      }}>
+                      <th
+                        key={col.key}
+                        onClick={isSortable(col) ? () => handleSort(col.key) : undefined}
+                        style={{
+                          padding: '12px 14px',
+                          textAlign: col.key === 'rank' ? 'center' : 'left',
+                          color: isContest && colors ? colors.color : 'var(--color-text-muted)',
+                          fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em',
+                          borderBottom: '1px solid var(--color-border)',
+                          fontWeight: 600, background: 'var(--color-surface-3)',
+                          whiteSpace: 'nowrap',
+                          cursor: isSortable(col) ? 'pointer' : 'default',
+                          userSelect: isSortable(col) ? 'none' : undefined,
+                        }}
+                      >
                         {col.name}
+                        {isSortable(col) && isSorted && sortDir && (
+                          <span style={{ marginLeft: 4, fontSize: 10, opacity: 0.7 }}>
+                            {sortDir === 'asc' ? '▲' : '▼'}
+                          </span>
+                        )}
                       </th>
                     );
                   })}
                 </tr>
               </thead>
               <tbody>
-                {rows.map((row, i) => (
+                {sortedRows.map((row, i) => (
                   <tr key={row.team_id ?? i} style={{
                     borderBottom: '1px solid var(--color-border)',
                     background: i % 2 === 0 ? 'transparent' : 'rgba(180,190,255,0.015)',
                   }}>
-                    {columns.map((col) => {
+                    {visibleColumns.map((col) => {
                       const value = getCellValue(row, col);
 
                       // Columna de posición
@@ -172,6 +229,57 @@ const LeaguePage = () => {
                             padding: '12px 14px', color: 'var(--color-gold)',
                             fontWeight: 700,
                           }}>{value}</td>
+                        );
+                      }
+
+                      // Columna balloon-points con tooltip de desglose
+                      if (col.key === 'balloon-points') {
+                        const teamId = row.team_id ?? i;
+                        const isHovered = hoveredTeamId === teamId;
+                        const showBelow = i < sortedRows.length / 2;
+                        return (
+                          <td
+                            key={col.key}
+                            style={{
+                              padding: '12px 14px', color: 'var(--color-text-secondary)',
+                              position: 'relative',
+                            }}
+                            onMouseEnter={() => setHoveredTeamId(teamId)}
+                            onMouseLeave={() => setHoveredTeamId(null)}
+                          >
+                            <span style={{
+                              borderBottom: '1px dashed var(--color-text-muted)',
+                              paddingBottom: 1, cursor: 'default',
+                            }}>
+                              {value}
+                            </span>
+                            {isHovered && (
+                              <div style={{
+                                position: 'absolute', left: '50%',
+                                transform: 'translateX(-50%)',
+                                ...(showBelow
+                                  ? { top: '100%', marginTop: 6 }
+                                  : { bottom: '100%', marginBottom: 6 }),
+                                background: 'var(--color-surface-3)',
+                                border: '1px solid var(--color-border)',
+                                borderRadius: 'var(--radius-md)',
+                                padding: '8px 12px', fontSize: 12,
+                                color: 'var(--color-text-primary)',
+                                whiteSpace: 'nowrap', zIndex: 10,
+                                pointerEvents: 'none',
+                                boxShadow: '0 4px 12px rgba(0,0,0,0.5)',
+                              }}>
+                                <div style={{
+                                  color: 'var(--color-text-muted)', marginBottom: 4,
+                                  fontWeight: 600, fontSize: 11,
+                                }}>Desglose de globos</div>
+                                <div>Virtual: <strong>{row.balloons_virtual}</strong></div>
+                                <div>Presencial: <strong>{row.balloons_presencial}</strong></div>
+                                <div>ICPC: <strong>{row.balloons_icpc}</strong></div>
+                                <div>Interna: <strong>{row.balloons_interna}</strong></div>
+                              </div>
+                            )}
+                          </td>
                         );
                       }
 
