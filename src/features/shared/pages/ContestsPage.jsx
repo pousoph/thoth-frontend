@@ -97,10 +97,11 @@ const ContestsPage = () => {
       )}
 
       {loading ? (
-        <div style={{
-          height: 200, borderRadius: 'var(--radius-md)',
-          background: 'var(--color-surface-3)', animation: 'pulse 1.5s ease-in-out infinite',
-        }} />
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          {[1,2,3,4,5].map((i) => (
+            <div className="skeleton" style={{ height: 52 }} key={i} />
+          ))}
+        </div>
       ) : filtered.length === 0 ? (
         <div style={{
           textAlign: 'center', padding: '48px 16px',
@@ -159,11 +160,11 @@ const ContestsPage = () => {
                     overflow: 'hidden',
                   }}>
                     {resultsLoading ? (
-                      <div style={{
-                        height: 100,
-                        background: 'var(--color-surface-3)',
-                        animation: 'pulse 1.5s ease-in-out infinite',
-                      }} />
+                      <div style={{ padding: 16, display: 'flex', flexDirection: 'column', gap: 8 }}>
+                        {[1,2,3].map((i) => (
+                          <div className="skeleton" style={{ height: 40 }} key={i} />
+                        ))}
+                      </div>
                     ) : resultsError ? (
                       <div style={{
                         padding: '12px 16px', fontSize: 13, color: 'var(--color-error)',
@@ -180,7 +181,7 @@ const ContestsPage = () => {
                         </thead>
                         <tbody>
                           {results.results.map((r, idx) => (
-                            <tr key={r.team_id ?? idx} style={{
+                            <tr key={idx} style={{
                               borderBottom: '1px solid var(--color-border)',
                               background: idx % 2 === 0 ? 'transparent' : 'rgba(180,190,255,0.015)',
                             }}>
