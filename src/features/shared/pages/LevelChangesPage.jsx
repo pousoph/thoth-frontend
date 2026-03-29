@@ -50,10 +50,7 @@ const LevelChangesPage = () => {
       {loading ? (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           {[1,2,3,4,5].map((i) => (
-            <div key={i} style={{
-              height: 64, borderRadius: 'var(--radius-md)',
-              background: 'var(--color-surface-3)', animation: 'pulse 1.5s ease-in-out infinite',
-            }} />
+            <div className="skeleton" style={{ height: 64 }} key={i} />
           ))}
         </div>
       ) : entries.length === 0 ? (

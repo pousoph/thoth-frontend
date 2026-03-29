@@ -65,9 +65,14 @@ const AdminContestantsPage = () => {
 
       {loading ? (
         <div style={{
-          height: 300, borderRadius: 'var(--radius-md)',
-          background: 'var(--color-surface-3)', animation: 'pulse 1.5s ease-in-out infinite',
-        }} />
+          background: 'var(--color-surface-2)', border: '1px solid var(--color-border)',
+          borderRadius: 'var(--radius-xl)', padding: 16, overflow: 'hidden',
+        }}>
+          <div className="skeleton" style={{ height: 36, marginBottom: 10 }} />
+          {[1,2,3,4,5].map((i) => (
+            <div className="skeleton" style={{ height: 48, marginBottom: 8 }} key={i} />
+          ))}
+        </div>
       ) : contestants.length === 0 ? (
         <EmptyState
           icon="🔍"
