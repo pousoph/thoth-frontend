@@ -44,6 +44,7 @@ const RoleRedirect = () => {
 import LeaguePage              from '@/features/shared/pages/LeaguePage';
 import LevelChangesPage        from '@/features/shared/pages/LevelChangesPage';
 import CodeforcesRankingPage   from '@/features/shared/pages/CodeforcesRankingPage';
+import ContestsPage            from '@/features/shared/pages/ContestsPage';
 
 // ── Admin module ──────────────────────────────────────────────────────────
 import AdminLayout          from '@/layouts/admin/AdminLayout';
@@ -74,7 +75,8 @@ const App = () => (
         <Route path="tasks"       element={<TasksPageContestant />} />
         <Route path="teams"       element={<TeamsPageContestant />} />
         <Route path="metrics"     element={<MetricsPage />} />
-        <Route path="league"      element={<LeaguePage />} />
+        <Route path="league"        element={<LeaguePage />} />
+        <Route path="competencias" element={<ContestsPage />} />
         <Route path="ascensos"    element={<LevelChangesPage />} />
         <Route path="cf-ranking"  element={<CodeforcesRankingPage />} />
         <Route path="profile"     element={<ProfilePage />} />
@@ -91,6 +93,7 @@ const App = () => (
         <Route path="contests"      element={<AdminContestsPage />} />
         <Route path="contestants"   element={<AdminContestantsPage />} />
         <Route path="league"        element={<LeaguePage />} />
+        <Route path="competencias"  element={<ContestsPage />} />
         <Route path="ascensos"      element={<LevelChangesPage />} />
         <Route path="cf-ranking"    element={<CodeforcesRankingPage />} />
       </Route>
@@ -108,6 +111,7 @@ const App = () => (
         <Route path="tasks"             element={<CoachTasks />} />
         <Route path="analytics"         element={<CoachAnalytics />} />
         <Route path="league"            element={<LeaguePage />} />
+        <Route path="competencias"      element={<ContestsPage />} />
         <Route path="ascensos"          element={<LevelChangesPage />} />
         <Route path="cf-ranking"        element={<CodeforcesRankingPage />} />
       </Route>

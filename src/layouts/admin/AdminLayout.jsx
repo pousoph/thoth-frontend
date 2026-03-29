@@ -68,14 +68,21 @@ const IconContestants = () => (
   </svg>
 );
 
+const IconContests = () => (
+  <svg className="cl-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="8" r="6"/><path d="M12 14v8"/><path d="M9 18h6"/>
+  </svg>
+);
+
 const NAV_ITEMS = [
-  { to: '/admin/dashboard',   label: 'Dashboard',     Icon: IconDashboard    },
-  { to: '/admin/coaches',     label: 'Coaches',        Icon: IconUsers        },
-  { to: '/admin/contestants', label: 'Competidores',   Icon: IconContestants  },
-  { to: '/admin/contests',   label: 'Competencias',   Icon: IconTrophy       },
-  { to: '/admin/league',       label: 'Liga',           Icon: IconLeague      },
-  { to: '/admin/ascensos',    label: 'Ascensos',      Icon: IconAscensos },
-  { to: '/admin/cf-ranking',  label: 'Ranking CF',    Icon: IconCF       },
+  { to: '/admin/dashboard',     label: 'Dashboard',       Icon: IconDashboard    },
+  { to: '/admin/coaches',       label: 'Coaches',          Icon: IconUsers        },
+  { to: '/admin/contestants',   label: 'Competidores',     Icon: IconContestants  },
+  { to: '/admin/contests',     label: 'Registrar Comp.',  Icon: IconTrophy       },
+  { to: '/admin/league',        label: 'Liga',              Icon: IconLeague      },
+  { to: '/admin/competencias',  label: 'Competencias',     Icon: IconContests    },
+  { to: '/admin/ascensos',      label: 'Ascensos',         Icon: IconAscensos    },
+  { to: '/admin/cf-ranking',    label: 'Ranking CF',       Icon: IconCF          },
 ];
 
 // ── Page title map ─────────────────────────────────────────────────────────────
@@ -84,8 +91,9 @@ const PAGE_TITLES = {
   '/admin/coaches':   { title: 'Gestión de Coaches', breadcrumb: 'Solicitudes pendientes' },
   '/admin/contests':     { title: 'Competencias', breadcrumb: 'Registrar resultados' },
   '/admin/contestants':  { title: 'Competidores', breadcrumb: 'Todos los competidores' },
-  '/admin/league':    { title: 'Liga',          breadcrumb: 'Tabla de posiciones' },
-  '/admin/ascensos':    { title: 'Ascensos',      breadcrumb: 'Historial de cambios de nivel' },
+  '/admin/league':        { title: 'Liga',          breadcrumb: 'Tabla de posiciones' },
+  '/admin/competencias': { title: 'Competencias',  breadcrumb: 'Resultados por competencia' },
+  '/admin/ascensos':     { title: 'Ascensos',      breadcrumb: 'Historial de cambios de nivel' },
   '/admin/cf-ranking':  { title: 'Ranking CF',    breadcrumb: 'Ranking de Codeforces' },
 };
 

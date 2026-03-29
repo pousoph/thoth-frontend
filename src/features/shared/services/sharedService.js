@@ -73,6 +73,49 @@ export const fetchCodeforcesRanking = async () => {
   }
 };
 
+// GET /contests
+const normalizeContest = (c) => ({
+  id:   c.id ?? null,
+  name: c.name ?? '',
+  type: c.type ?? '',
+});
+
+export const fetchContests = async () => {
+  try {
+    const { data } = await apiClient.get('/contests');
+    const list = Array.isArray(data) ? data.map(normalizeContest) : [];
+    return { success: true, data: list };
+  } catch (err) {
+    return { success: false, message: getApiError(err, 'Error al cargar competencias') };
+  }
+};
+
+// GET /contests/:id/results
+const normalizeContestResult = (r) => ({
+  team_id:   pick(r, 'team_id', 'team-id', 'teamId') ?? null,
+  team_name: pick(r, 'team_name', 'team-name', 'teamName') ?? '',
+  position:  r.position ?? 0,
+  balloons:  r.balloons ?? 0,
+  score:     r.score ?? 0,
+});
+
+export const fetchContestResults = async (contestId) => {
+  try {
+    const { data } = await apiClient.get(`/contests/${contestId}/results`);
+    return {
+      success: true,
+      data: {
+        contest_id:   pick(data, 'contest_id', 'contest-id', 'contestId') ?? contestId,
+        contest_name: pick(data, 'contest_name', 'contest-name', 'contestName') ?? '',
+        contest_type: pick(data, 'contest_type', 'contest-type', 'contestType') ?? '',
+        results:      Array.isArray(data.results) ? data.results.map(normalizeContestResult) : [],
+      },
+    };
+  } catch (err) {
+    return { success: false, message: getApiError(err, 'Error al cargar resultados') };
+  }
+};
+
 // GET /contestants/level-changes
 export const fetchLevelChanges = async () => {
   try {

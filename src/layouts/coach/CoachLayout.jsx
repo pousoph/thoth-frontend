@@ -75,14 +75,21 @@ const IconCF = () => (
   </svg>
 );
 
+const IconContests = () => (
+  <svg className="co-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="8" r="6"/><path d="M12 14v8"/><path d="M9 18h6"/>
+  </svg>
+);
+
 const NAV_ITEMS = [
   { to: '/coach/dashboard',   label: 'Dashboard',     Icon: IconDashboard  },
   { to: '/coach/teams',       label: 'Equipos',       Icon: IconTeams      },
   { to: '/coach/competitors', label: 'Competidores',  Icon: IconCompetitors },
   { to: '/coach/tasks',       label: 'Tareas',        Icon: IconTasks      },
   { to: '/coach/analytics',   label: 'Estadísticas',  Icon: IconAnalytics  },
-  { to: '/coach/league',      label: 'Liga',           Icon: IconLeague    },
-  { to: '/coach/ascensos',    label: 'Ascensos',       Icon: IconAscensos  },
+  { to: '/coach/league',        label: 'Liga',           Icon: IconLeague    },
+  { to: '/coach/competencias', label: 'Competencias',   Icon: IconContests  },
+  { to: '/coach/ascensos',     label: 'Ascensos',       Icon: IconAscensos  },
   { to: '/coach/cf-ranking',  label: 'Ranking CF',     Icon: IconCF        },
 ];
 
@@ -92,8 +99,9 @@ const PAGE_TITLES = {
   '/coach/competitors': { title: 'Competidores',      breadcrumb: 'Gestión de competidores' },
   '/coach/tasks':       { title: 'Tareas',            breadcrumb: 'Asignación de tareas' },
   '/coach/analytics':   { title: 'Estadísticas',      breadcrumb: 'Análisis de rendimiento' },
-  '/coach/league':      { title: 'Liga',              breadcrumb: 'Tabla de posiciones' },
-  '/coach/ascensos':    { title: 'Ascensos',          breadcrumb: 'Historial de cambios de nivel' },
+  '/coach/league':        { title: 'Liga',              breadcrumb: 'Tabla de posiciones' },
+  '/coach/competencias': { title: 'Competencias',      breadcrumb: 'Resultados por competencia' },
+  '/coach/ascensos':     { title: 'Ascensos',          breadcrumb: 'Historial de cambios de nivel' },
   '/coach/cf-ranking':  { title: 'Ranking CF',        breadcrumb: 'Ranking de Codeforces' },
 };
 
