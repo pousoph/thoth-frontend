@@ -90,6 +90,42 @@ export const createContestManual = async (payload) => {
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
+// UPDATE CONTEST — PUT /contests/:id
+// Body (campos opcionales): { name, type }
+// ─────────────────────────────────────────────────────────────────────────────
+export const updateContest = async (contestId, { name, type } = {}) => {
+  try {
+    const body = {};
+    if (name !== undefined) body.name = name;
+    if (type !== undefined) body.type = type;
+    const { data } = await apiClient.put(`/contests/${contestId}`, body);
+    return { success: true, message: data.message ?? 'Competencia actualizada' };
+  } catch (err) {
+    return { success: false, message: getApiError(err, 'Error al actualizar la competencia') };
+  }
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// UPDATE CONTEST RESULTS — PUT /contests/:id/results
+// Body: { results: [{ "team-id", balloons, position }] }
+// ─────────────────────────────────────────────────────────────────────────────
+export const updateContestResults = async (contestId, results) => {
+  try {
+    const body = {
+      results: results.map((r) => ({
+        'team-id':  r.team_id ?? r.teamId ?? r['team-id'],
+        balloons:   r.balloons,
+        position:   r.position,
+      })),
+    };
+    const { data } = await apiClient.put(`/contests/${contestId}/results`, body);
+    return { success: true, message: data.message ?? 'Resultados actualizados' };
+  } catch (err) {
+    return { success: false, message: getApiError(err, 'Error al actualizar resultados') };
+  }
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
 // CONTESTANTS — GET /contestants
 // ─────────────────────────────────────────────────────────────────────────────
 const normalizeContestant = (c) => ({
