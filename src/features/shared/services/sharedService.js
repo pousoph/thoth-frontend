@@ -116,6 +116,24 @@ export const fetchContestResults = async (contestId) => {
   }
 };
 
+// GET /teams/search?q=
+const normalizeTeamSearch = (t) => ({
+  id:        t.id ?? null,
+  name:      t.name ?? '',
+  is_active: t.is_active ?? t['is-active'] ?? t.isActive ?? true,
+});
+
+export const searchTeams = async (query) => {
+  if (!query?.trim()) return { success: true, data: [] };
+  try {
+    const { data } = await apiClient.get(`/teams/search?q=${encodeURIComponent(query.trim())}`);
+    const list = Array.isArray(data) ? data.map(normalizeTeamSearch) : [];
+    return { success: true, data: list };
+  } catch (err) {
+    return { success: false, message: getApiError(err, 'Error al buscar equipos') };
+  }
+};
+
 // GET /contestants/level-changes
 export const fetchLevelChanges = async () => {
   try {
