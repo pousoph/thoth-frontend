@@ -110,8 +110,9 @@ export const registerContestant = async (payload) => {
     if (data?.id != null) useAuthStore.getState().setPendingUserId(Number(data.id));
     return { success: true };
   } catch (err) {
-    if (err?.response?.data?.error === 'codeforces handle not found')
-      return { success: false, message: 'El handle de Codeforces no existe. Verifica que sea correcto.' };
+    const backendMsg = (err?.response?.data?.error ?? err?.response?.data?.message ?? '').toLowerCase();
+    if (backendMsg.includes('codeforces'))
+      return { success: false, message: 'El handle de Codeforces no es válido o no existe. Verifica que sea correcto.' };
     return { success: false, message: getError(err, 'Error al registrar competidor') };
   }
 };
@@ -126,8 +127,9 @@ export const registerCoach = async (payload) => {
     if (data?.id != null) useAuthStore.getState().setPendingUserId(Number(data.id));
     return { success: true };
   } catch (err) {
-    if (err?.response?.data?.error === 'codeforces handle not found')
-      return { success: false, message: 'El handle de Codeforces no existe. Verifica que sea correcto.' };
+    const backendMsg = (err?.response?.data?.error ?? err?.response?.data?.message ?? '').toLowerCase();
+    if (backendMsg.includes('codeforces'))
+      return { success: false, message: 'El handle de Codeforces no es válido o no existe. Verifica que sea correcto.' };
     return { success: false, message: getError(err, 'Error al registrar coach') };
   }
 };
