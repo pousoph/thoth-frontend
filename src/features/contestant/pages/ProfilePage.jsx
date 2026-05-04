@@ -10,11 +10,20 @@ import { FormError } from '@/features/auth/components/FormAlerts';
 
 // ── Codeforces API ────────────────────────────────────────────────────────────
 const fetchCfProfile = async (handle) => {
+  const clean = String(handle ?? '').trim();
+  if (!clean) return { success: false };
+
   try {
-    const res  = await fetch(`https://codeforces.com/api/user.info?handles=${handle}`);
+    const url = `https://codeforces.com/api/user.info?handles=${encodeURIComponent(clean)}&checkHistoricHandles=false`;
+    const res = await fetch(url);
+    if (!res.ok) return { success: false };
+
     const data = await res.json();
-    if (data.status !== 'OK') throw new Error();
-    const u = data.result[0];
+    if (data.status !== 'OK') return { success: false };
+
+    const u = Array.isArray(data.result) ? data.result[0] : null;
+    if (!u || !u.handle) return { success: false };
+
     return {
       success:   true,
       handle:    u.handle,
